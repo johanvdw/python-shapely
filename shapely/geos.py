@@ -11,20 +11,15 @@ import sys
 from ctypes_declarations import prototype
 
 
-if sys.platform == 'win32':
-    try:
-        local_dlls = os.path.abspath(os.__file__ + "../../../DLLs")
-        original_path = os.environ['PATH']
-        os.environ['PATH'] = "%s;%s" % (local_dlls, original_path)
-        lgeos = PyDLL("geos.dll")
-    except (ImportError, WindowsError):
-        raise
-    def free(m):
-        try:
-            cdll.msvcrt.free(m)
-        except WindowsError:
-            # XXX: See http://trac.gispython.org/projects/PCL/ticket/149
-            pass
+# Find and load the GEOS and C libraries
+# If this ever gets any longer, we'll break it into separate modules
+
+if sys.platform == 'linux2':
+    lgeos = PyDLL(find_library('geos_c'))
+    free = CDLL(find_library('c')).free
+    free.argtypes = [c_void_p]
+    free.restype = None
+
 elif sys.platform == 'darwin':
     lib = find_library('geos_c')
     if lib is None:
@@ -40,13 +35,43 @@ elif sys.platform == 'darwin':
                 lib = path
                 break
     if lib is None:
-        raise ImportError, "Could not find geos_c library"
+        raise ImportError("Could not find geos_c library")
     lgeos = PyDLL(lib)
-    free = CDLL(find_library('libc')).free
-    free.argtypes=[c_void_p]
-    free.restype=None
-else:
-    # Try the major versioned name first, falling back on the unversioned name.
+    free = CDLL(find_library('c')).free
+    free.argtypes = [c_void_p]
+    free.restype = None
+
+elif sys.platform == 'win32':
+    try:
+        local_dlls = os.path.abspath(os.__file__ + "../../../DLLs")
+        original_path = os.environ['PATH']
+        os.environ['PATH'] = "%s;%s" % (local_dlls, original_path)
+        lgeos = PyDLL("geos.dll")
+    except (ImportError, WindowsError):
+        raise
+    def free(m):
+        try:
+            cdll.msvcrt.free(m)
+        except WindowsError:
+            # XXX: See http://trac.gispython.org/projects/PCL/ticket/149
+            pass
+
+elif sys.platform == 'sunos5':
+    # Try the major versioned name first, falling back on the unversioned
+    # name.
+    try:
+        lgeos = PyDLL('libgeos_c.so.1')
+    except (OSError, ImportError):
+        lgeos = PyDLL('libgeos_c.so')
+    except:
+        raise
+    free = CDLL('libc.so.1').free
+    free.argtypes = [c_void_p]
+    free.restype = None
+
+else: # other *nix systems
+    # Try the major versioned name first, falling back on the unversioned
+    # name.
     try:
         lgeos = PyDLL('libgeos_c.so.1')
     except (OSError, ImportError):
@@ -54,8 +79,8 @@ else:
     except:
         raise
     free = CDLL('libc.so.6').free
-    free.argtypes=[c_void_p]
-    free.restype=None
+    free.argtypes = [c_void_p]
+    free.restype = None
 
 # Prototype the libgeos_c functions using new code from `tarley` in
 # http://trac.gispython.org/lab/ticket/189
