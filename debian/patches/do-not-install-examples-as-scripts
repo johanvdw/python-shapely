@@ -1,0 +1,18 @@
+Description: Do not install examples as scripts
+ Scripts in examples dir are already installed in
+ /usr/share/doc/python-shapely/examples
+ and should not be installed in /usr/bin.
+Author: Pietro Battiston <toobaz@email.it>
+Forwarded: yes
+
+--- python-shapely-1.2.1.orig/setup.py
++++ python-shapely-1.2.1/setup.py
+@@ -29,7 +29,7 @@ setup_args = dict(
+     url                 = 'http://trac.gispython.org/lab/wiki/Shapely',
+     long_description    = readme_text,
+     packages            = ['shapely', 'shapely.geometry'],
+-    scripts             = ['examples/dissolve.py', 'examples/intersect.py'],
++#    scripts             = ['examples/dissolve.py', 'examples/intersect.py'],
+     test_suite          = 'shapely.tests.test_suite',
+     classifiers         = [
+         'Development Status :: 5 - Production/Stable',
