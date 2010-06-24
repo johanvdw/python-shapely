@@ -9,6 +9,7 @@ Shapely.egg-info/PKG-INFO
 Shapely.egg-info/SOURCES.txt
 Shapely.egg-info/dependency_links.txt
 Shapely.egg-info/top_level.txt
+docs/manual.txt
 examples/dissolve.py
 examples/intersect.py
 shapely/__init__.py
