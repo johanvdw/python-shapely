@@ -1,3 +1,12 @@
+python-shapely (1.2-1) unstable; urgency=low
+
+  * New upstream release (Closes: )
+  * Matched package description to upstream readme
+  * Indicate new upstream manual
+  * Mark depedence on Python >= 2.5 and GEOS >= 3.1
+
+ -- X
+ 
 python-shapely (1.0.15-1) unstable; urgency=low
 
   * New upstream release (Closes: #577213)
