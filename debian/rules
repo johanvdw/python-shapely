@@ -9,3 +9,8 @@ export DH_OPTIONS
 
 %:
 	dh  $@
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	python setup.py test
+endif
