@@ -1,3 +1,10 @@
+python-shapely (1.2.2-1) unstable; urgency=low
+
+  * Imported Upstream version 1.2.2 (Closes: #590475)
+  * Run tests, except the locale one.
+
+ -- Pietro Battiston <toobaz@email.it>  Sat, 14 Aug 2010 22:40:04 +0200
+
 python-shapely (1.2.1-1) unstable; urgency=low
 
   * New upstream release
