@@ -76,7 +76,8 @@ Topology operations
   >>> point.union(Point(-1, 1)) #doctest: +ELLIPSIS
   <shapely.geometry.multipoint.MultiPoint object at ...>
 
-  Point on Surface (TODO?)
+  >>> point.representative_point() #doctest: +ELLIPSIS
+  <shapely.geometry.point.Point object at ...>
 
   >>> point.centroid #doctest: +ELLIPSIS
   <shapely.geometry.point.Point object at ...>

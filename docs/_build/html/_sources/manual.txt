@@ -224,6 +224,11 @@ General Attributes and Methods
   >>> donut.representative_point().wkt
   'POINT (-1.5000000000000000 0.0000000000000000)'
 
+.. sourcecode:: pycon
+
+  >>> Point(0,0).distance(Point(1,1))
+  1.4142135623730951
+
 .. _points:
 
 Points
