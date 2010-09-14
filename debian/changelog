@@ -1,3 +1,12 @@
+python-shapely (1.2.1-2) unstable; urgency=low
+
+  * Fixes to manual from upstream version 1.2.3
+  * Run tests, except wkt_locale which is broken.
+  * Require newer version of debhelper to support override_dh_auto_test.
+  * Updated standards version.
+
+ -- Pietro Battiston <toobaz@email.it>  Tue, 14 Sep 2010 18:30:47 +0200
+
 python-shapely (1.2.1-1) unstable; urgency=low
 
   * New upstream release
