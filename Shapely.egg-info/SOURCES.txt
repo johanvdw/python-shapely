@@ -64,6 +64,7 @@ shapely/tests/test_doctests.py
 shapely/tests/test_emptiness.py
 shapely/tests/test_equality.py
 shapely/tests/test_geomseq.py
+shapely/tests/test_mapping.py
 shapely/tests/test_prepared.py
 shapely/tests/test_singularity.py
 shapely/tests/test_validation.py
