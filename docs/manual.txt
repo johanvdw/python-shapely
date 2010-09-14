@@ -1366,8 +1366,8 @@ Figure 1. Convex hull (blue) of 2 points (left) and of 6 points (right).
 
 .. attribute:: object.envelope
 
-  Returns a representation of the point or smallest rectangular polygon that
-  contains the object.
+  Returns a representation of the point or smallest rectangular polygon (with
+  sides parallel to the coordinate axes) that contains the object.
 
 .. sourcecode:: pycon
 
@@ -1501,7 +1501,7 @@ first use the :func:`prepared.prep` function.
 .. sourcecode:: pycon
 
   >>> from shapely.geometry import Point
-  >>> from shapely.prepared import polyprep
+  >>> from shapely.prepared import prep
   >>> points = [...] # large list of points
   >>> polygon = Point(0.0, 0.0).buffer(1.0)
   >>> prepared_polygon = prep(polygon)
@@ -1513,6 +1513,26 @@ Prepared geometries instances have the following methods: ``contains``,
 ``contains_properly``, ``covers``, and ``intersects``. All have exactly the
 same arguments and usage as their counterparts in non-prepared geometric
 objects.
+
+Diagnostics
+-----------
+
+.. function:: validation.explain_validity(ob):
+
+  Returns a string explaining the validity or invalidity of the object.
+
+  `New in version 1.2.1`.
+
+The messages may or may not have a representation of a problem point that can
+be parsed out.
+
+.. sourcecode:: python
+
+  >>> coords = [(0, 0), (0, 2), (1, 1), (2, 2), (2, 0), (1, 1), (0, 0)]
+  >>> p = Polygon(coords)
+  >>> from shapely.validation import explain_validity
+  >>> explain_validity(p)
+  'Ring Self-intersection[1 1]'
 
 Interoperation
 ==============
