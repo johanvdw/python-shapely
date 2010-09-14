@@ -1,7 +1,6 @@
 python-shapely (1.2.3-1) unstable; urgency=low
 
   * New upstream release (Closes: #590475)
-  * Removed non-working locale
   * Updated standards to 3.9.1
   * Run tests, except wkt_locale which is broken.
   * Require newer version of debhelper to support override_dh_auto_test.
