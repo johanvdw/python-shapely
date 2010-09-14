@@ -1,9 +1,12 @@
-python-shapely (1.2.2-1) unstable; urgency=low
+python-shapely (1.2.3-1) unstable; urgency=low
 
-  * Imported Upstream version 1.2.2 (Closes: #590475)
-  * Run tests, except the locale one.
+  * New upstream release (Closes: #590475)
+  * Removed non-working locale
+  * Updated standards to 3.9.1
+  * Run tests, except wkt_locale which is broken.
 
- -- Pietro Battiston <toobaz@email.it>  Sat, 14 Aug 2010 22:40:04 +0200
+ -- Pietro Battiston <toobaz@email.it>  Tue, 14 Sep 2010 11:12:38 +0200
+
 
 python-shapely (1.2.1-1) unstable; urgency=low
 
