@@ -3,7 +3,7 @@ Section: python
 Priority: optional
 Maintainer: Pietro Battiston <toobaz@email.it>
 Build-Depends: debhelper (>= 7.0.50)
-Build-Depends-Indep: python-setuptools (>= 0.6), python-support (>= 0.6)
+Build-Depends-Indep: python-setuptools (>= 0.6), python-support (>= 0.6), libgeos-c1 (>= 3.1.0)
 Standards-Version: 3.9.1
 XS-Python-Version: >= 2.5
 Homepage: http://trac.gispython.org/lab/wiki/Shapely
