@@ -7,7 +7,7 @@ import warnings
 
 from shapely.coords import CoordinateSequence
 from shapely.geos import lgeos
-from shapely.impl import DefaultImplementation
+from shapely.impl import DefaultImplementation, delegated
 from shapely import wkb, wkt
 
 GEOMETRY_TYPES = [
@@ -250,6 +250,7 @@ class BaseGeometry(object):
         """Returns the geometric center of the object"""
         return geom_factory(self.impl['centroid'](self))
 
+    @delegated
     def representative_point(self):
         """Returns a point guaranteed to be within the object, cheaply."""
         return geom_factory(self.impl['representative_point'](self))
@@ -299,6 +300,7 @@ class BaseGeometry(object):
             res = resolution
         return geom_factory(self.impl['buffer'](self, distance, res))
 
+    @delegated
     def simplify(self, tolerance, preserve_topology=True):
         """Returns a simplified geometry produced by the Douglas-Puecker 
         algorithm
@@ -419,6 +421,7 @@ class BaseGeometry(object):
     # Linear referencing
     # ------------------
 
+    @delegated
     def project(self, other, normalized=False):
         """Returns the distance along this geometry to a point nearest the 
         specified point
@@ -431,7 +434,8 @@ class BaseGeometry(object):
         else:
             op = self.impl['project']
         return op(self, other)
-
+           
+    @delegated
     def interpolate(self, distance, normalized=False):
         """Return a point at the specified distance along a linear geometry
         
