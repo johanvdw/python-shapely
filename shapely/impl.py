@@ -11,6 +11,8 @@ This is layer number 2 from the list below.
 Shapely 1.2 includes a GEOS backend and it is the default.
 """
 
+from functools import wraps
+
 from shapely.coords import BoundsOp
 from shapely.geos import lgeos
 from shapely.linref import ProjectOp, InterpolateOp
@@ -18,8 +20,32 @@ from shapely.predicates import BinaryPredicate, UnaryPredicate
 from shapely.topology import BinaryRealProperty, BinaryTopologicalOp
 from shapely.topology import UnaryRealProperty, UnaryTopologicalOp
 
+def delegated(func):
+    """A delegated method raises AttributeError in the absence of backend 
+    support."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except KeyError:
+            raise AttributeError, "Method '%s' is not supported by %s" % (
+                func.__name__, repr(args[0].impl))
+    return wrapper
 
 # Map geometry methods to their GEOS delegates
+
+class BaseImpl(object):
+    def __init__(self, values):
+        self.map = dict(values)
+    def update(self, values):
+        self.map.update(values)
+    def __getitem__(self, key):
+        return self.map[key]
+
+class GEOSImpl(BaseImpl):
+    def __repr__(self):
+        return '<GEOSImpl object: GEOS C API version %s>' % (
+            lgeos.geos_capi_version,)
 
 IMPL14 = {
     'area': (UnaryRealProperty, 'area'),
@@ -81,7 +107,7 @@ IMPL16LR = {
 def impl_items(defs):
     return [(k, v[0](v[1])) for k, v in defs.items()]
 
-imp = dict(impl_items(IMPL14))
+imp = GEOSImpl(dict(impl_items(IMPL14)))
 if lgeos.geos_capi_version >= (1, 5, 0):
     imp.update(impl_items(IMPL15))
 if lgeos.geos_capi_version >= (1, 6, 0):

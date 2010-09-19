@@ -60,6 +60,8 @@ shapely/tests/linear-referencing.txt
 shapely/tests/linemerge.txt
 shapely/tests/polygonize.txt
 shapely/tests/test_collection.py
+shapely/tests/test_delegated.py
+shapely/tests/test_dlls.py
 shapely/tests/test_doctests.py
 shapely/tests/test_emptiness.py
 shapely/tests/test_equality.py
