@@ -1,2 +1,4 @@
 disable-broken-locale-test
 do-not-install-examples-as-scripts
+manual-backported-fixes
+disable-broken-locale-test
