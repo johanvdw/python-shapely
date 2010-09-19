@@ -1,3 +1,9 @@
+python-shapely (1.2.4-1) experimental; urgency=low
+
+  * New upstream release (Closes: #590475)
+
+ -- Pietro Battiston <toobaz@email.it>  Sun, 19 Sep 2010 10:11:40 +0200
+
 python-shapely (1.2.1-2) unstable; urgency=low
 
   * Fixes to manual from upstream version 1.2.3
