@@ -1,6 +1,6 @@
-Format-Specification: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op-file&rev=135
-Name: Shapely
-Maintainer: Pietro Battiston <toobaz@email.it>
+Format: http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=166
+Upstream-Name: Shapely
+Upstream-Contact: Gis Python community list <community@lists.gispython.org>
 Source: http://pypi.python.org/packages/source/S/Shapely/
 
 Files: *
@@ -32,7 +32,7 @@ License: BSD
  POSSIBILITY OF SUCH DAMAGE.
 
 Files: debian/*
-Copyright: © 2010 Pietro Battiston <toobaz@email.it>
+Copyright: © 2010 Pietro Battiston <me@pietrobattiston.it>
 License: GPL-3
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
