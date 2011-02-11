@@ -1,7 +1,7 @@
 Source: python-shapely
 Section: python
 Priority: optional
-Maintainer: Pietro Battiston <toobaz@email.it>
+Maintainer: Pietro Battiston <me@pietrobattiston.it>
 Build-Depends: debhelper (>= 7.0.50)
 Build-Depends-Indep: python-setuptools (>= 0.6), python-support (>= 0.6), libgeos-c1 (>= 3.1.0), python-numpy, python (>=2.5) | python-ctypes
 Standards-Version: 3.9.1

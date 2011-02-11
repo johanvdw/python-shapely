@@ -2,7 +2,7 @@ Description: Do not install examples as scripts
  Scripts in examples dir are already installed in
  /usr/share/doc/python-shapely/examples
  and should not be installed in /usr/bin.
-Author: Pietro Battiston <toobaz@email.it>
+Author: Pietro Battiston <me@pietrobattiston.it>
 Forwarded: yes
 
 --- python-shapely-1.2.1.orig/setup.py

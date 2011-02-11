@@ -2,7 +2,7 @@ Description: The following test assumes that the locale "pt_BR.UTF-8" is
 installed, and fails otherwise. Since there is no "non-trivial" locale which we
 can assume is installed, the only way to fix this seems to disable it.
 Forwarded, but upstream seems willing to not drop the test.
-Author: Pietro Battiston <toobaz@email.it>
+Author: Pietro Battiston <me@pietrobattiston.it>
 Forwarded: yes
 
 --- python-shapely.orig/shapely/tests/wkt_locale.txt	2010-09-14 11:43:00.000000000 +0200
