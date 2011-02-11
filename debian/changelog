@@ -1,3 +1,12 @@
+python-shapely (1.2.8-1) unstable; urgency=low
+
+  * New upstream release.
+  * Use dh_python2.
+  * Remove obsolete patch "typo-in-dll-test".
+  * Added python-matplotlib (used by example scripts) in Suggests.
+
+ -- Pietro Battiston <me@pietrobattiston.it>  Fri, 11 Feb 2011 12:03:40 +0200
+
 python-shapely (1.2.4-1) experimental; urgency=low
 
   * New upstream release (Closes: #590475)
