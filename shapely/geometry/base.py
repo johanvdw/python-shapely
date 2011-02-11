@@ -1,11 +1,11 @@
 """Base geometry class and utilities
 """
 
-from functools import wraps
 import sys
 import warnings
 
 from shapely.coords import CoordinateSequence
+from shapely.ftools import wraps
 from shapely.geos import lgeos
 from shapely.impl import DefaultImplementation, delegated
 from shapely import wkb, wkt
@@ -42,7 +42,10 @@ def geom_factory(g, parent=None):
     ob.__class__ = getattr(mod, geom_type)
     ob.__geom__ = g
     ob.__p__ = parent
-    ob._ndim = 2 # callers should be all from 2D worlds
+    if lgeos.methods['has_z'](g):
+        ob._ndim = 3
+    else:
+        ob._ndim = 2
     return ob
 
 def exceptNull(func):
@@ -159,9 +162,10 @@ class BaseGeometry(object):
     # Coordinate access
     # -----------------
 
-    @exceptNull
     def _get_coords(self):
         """Access to geometry's coordinates (CoordinateSequence)"""
+        if self.is_empty:
+            return []
         return CoordinateSequence(self)
 
     def _set_coords(self, ob):
@@ -185,7 +189,6 @@ class BaseGeometry(object):
     # Type of geometry and its representations
     # ----------------------------------------
 
-    @exceptNull
     def geometryType(self):
         return geometry_type_name(self._geom)
     
@@ -480,8 +483,9 @@ class BaseMultipartGeometry(BaseGeometry):
         "Multi-part geometries do not provide a coordinate sequence")
 
     @property
-    @exceptNull
     def geoms(self):
+        if self.is_empty:
+            return []
         return GeometrySequence(self, self.shape_factory)
 
     def __iter__(self):

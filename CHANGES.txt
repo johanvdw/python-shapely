@@ -1,11 +1,30 @@
-All tickets are children of http://trac.gispython.org/lab/ticket.
+1.2.8 (2011-12-03)
+------------------
+- New parallel_offset method (#6).
+- Support for Python 2.4.
+
+1.2.7 (2010-11-05)
+------------------
+- Support for Windows eggs.
+
+1.2.6 (2010-10-21)
+------------------
+- The geoms property of an empty collection yields [] instead of a ValueError
+  (#3).
+- The coords and geometry type sproperties have the same behavior as above.
+- Ensure that z values carry through into products of operations (#4).
+
+1.2.5 (2010-09-19)
+------------------
+- Stop distributing docs/_build.
+- Include library fallbacks in test_dlls.py for linux platform.
 
 1.2.4 (2010-09-09)
 ------------------
 - Raise AttributeError when there's no backend support for a method.
 - Raise OSError if libgeos_c.so (or variants) can't be found and loaded.
-- Add geos_c DLL loading support for linux platforms where find_library
-  doesn't work.
+- Add geos_c DLL loading support for linux platforms where find_library doesn't
+  work.
 
 1.2.3 (2010-08-17)
 ------------------
