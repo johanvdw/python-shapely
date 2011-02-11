@@ -2,7 +2,7 @@
 """
 
 from shapely.geometry.base import BaseMultipartGeometry
-from shapely.geometry.base import HeterogeneousGeometrySequence, exceptNull
+from shapely.geometry.base import HeterogeneousGeometrySequence
 
 
 class GeometryCollection(BaseMultipartGeometry):
@@ -26,8 +26,9 @@ class GeometryCollection(BaseMultipartGeometry):
         return dict(type='GeometryCollection', geometries=geometries)
 
     @property
-    @exceptNull
     def geoms(self):
+        if self.is_empty:
+            return []
         return HeterogeneousGeometrySequence(self)
 
 

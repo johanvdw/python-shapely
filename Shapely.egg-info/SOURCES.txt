@@ -1,7 +1,6 @@
 CHANGES.txt
 CREDITS.txt
 LICENSE.txt
-MANIFEST.in
 README.txt
 setup.cfg
 setup.py
@@ -10,12 +9,12 @@ Shapely.egg-info/SOURCES.txt
 Shapely.egg-info/dependency_links.txt
 Shapely.egg-info/top_level.txt
 docs/manual.txt
-docs/_build/html/_sources/manual.txt
 examples/dissolve.py
 examples/intersect.py
 shapely/__init__.py
 shapely/coords.py
 shapely/ctypes_declarations.py
+shapely/ftools.py
 shapely/geos.py
 shapely/impl.py
 shapely/iterops.py
@@ -56,7 +55,6 @@ shapely/tests/binascii_hex.txt
 shapely/tests/cascaded_union.txt
 shapely/tests/dimensions.txt
 shapely/tests/invalid_intersection.txt
-shapely/tests/linear-referencing.txt
 shapely/tests/linemerge.txt
 shapely/tests/polygonize.txt
 shapely/tests/test_collection.py
@@ -66,8 +64,10 @@ shapely/tests/test_doctests.py
 shapely/tests/test_emptiness.py
 shapely/tests/test_equality.py
 shapely/tests/test_geomseq.py
+shapely/tests/test_linear_referencing.py
 shapely/tests/test_mapping.py
 shapely/tests/test_prepared.py
+shapely/tests/test_products_z.py
 shapely/tests/test_singularity.py
 shapely/tests/test_validation.py
 shapely/tests/test_xy.py
