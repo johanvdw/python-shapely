@@ -9,15 +9,20 @@ except:
     "Failed to import distribute_setup, continuing without distribute.", 
     Warning)
 
+from distutils.errors import CCompilerError, DistutilsExecError, \
+    DistutilsPlatformError
+from setuptools.extension import Extension
+from setuptools.command.build_ext import build_ext
 from setuptools import setup, find_packages
 import sys
 
 readme_text = file('README.txt', 'rb').read()
+changes_text = file('CHANGES.txt', 'rb').read()
 
 setup_args = dict(
     metadata_version    = '1.2',
     name                = 'Shapely',
-    version             = '1.2.8',
+    version             = '1.2.10',
     requires_python     = '>=2.5,<3',
     requires_external   = 'libgeos_c (>=3.1)', 
     description         = 'Geometric objects, predicates, and operations',
@@ -28,9 +33,8 @@ setup_args = dict(
     maintainer          = 'Sean Gillies',
     maintainer_email    = 'sean.gillies@gmail.com',
     url                 = 'http://trac.gispython.org/lab/wiki/Shapely',
-    long_description    = readme_text,
-    packages            = ['shapely', 'shapely.geometry'],
-    scripts             = ['examples/dissolve.py', 'examples/intersect.py'],
+    long_description    = readme_text + "\n" + changes_text,
+    packages            = find_packages(),
     test_suite          = 'shapely.tests.test_suite',
     classifiers         = [
         'Development Status :: 5 - Production/Stable',
@@ -45,7 +49,6 @@ setup_args = dict(
 
 # Add DLLs for Windows
 if sys.platform == 'win32':
-    import glob
     if '(AMD64)' in sys.version:
         setup_args.update(
             data_files=[('DLLs', glob.glob('DLLs_AMD64/*.dll'))]
@@ -55,4 +58,59 @@ if sys.platform == 'win32':
             data_files=[('DLLs', glob.glob('DLLs_x86/*.dll'))]
             )
 
-setup(**setup_args)
+
+# Optional compilation of speedups
+# setuptools stuff from Bob Ippolito's simplejson project
+if sys.platform == 'win32' and sys.version_info > (2, 6):
+   # 2.6's distutils.msvc9compiler can raise an IOError when failing to
+   # find the compiler
+   ext_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError,
+                 IOError)
+else:
+   ext_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError)
+
+class BuildFailed(Exception):
+    pass
+
+class ve_build_ext(build_ext):
+    # This class allows C extension building to fail.
+
+    def run(self):
+        try:
+            build_ext.run(self)
+        except DistutilsPlatformError, x:
+            raise BuildFailed(x)
+
+    def build_extension(self, ext):
+        try:
+            build_ext.build_extension(self, ext)
+        except ext_errors, x:
+            raise BuildFailed(x)
+
+if sys.platform == 'win32':
+    ext_modules = []
+else:
+    ext_modules = [
+        Extension("shapely.speedups._speedups", 
+              ["shapely/speedups/_speedups.c"], libraries=['geos_c']),
+    ]
+
+try:
+    # try building with speedups
+    setup(
+        cmdclass={'build_ext': ve_build_ext},
+        ext_modules=ext_modules,
+        **setup_args
+    )
+except BuildFailed, ex:
+    BUILD_EXT_WARNING = "Warning: The C extension could not be compiled, speedups are not enabled."
+    print ex
+    print BUILD_EXT_WARNING
+    print "Failure information, if any, is above."
+    print "I'm retrying the build without the C extension now."
+
+    setup(**setup_args)
+
+    print BUILD_EXT_WARNING
+    print "Plain-Python installation succeeded."
+
