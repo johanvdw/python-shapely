@@ -3,8 +3,8 @@ The Shapely User Manual
 =======================
 
 :Author: Sean Gillies, <sean.gillies@gmail.com>
-:Revision: 1.2.6
-:Date: 17 October 2010
+:Revision: 1.2.10
+:Date: 2 May 2011
 :Copyright: 
   This work is licensed under a `Creative Commons Attribution 3.0
   United States License`__.
@@ -470,6 +470,40 @@ The `Polygon` constructor also accepts instances of `LineString` and
   >>> t.area
   6.5507620529190334
 
+Rectangular polygons occur commonly, and can be conveniently constructed using
+the :func:`shapely.geometry.box()` function.
+
+.. function:: shapely.geometry.box(minx, miny, maxx, maxy, ccw=True)
+
+  Makes a rectangular polygon from the provided bounding box values, with
+  counter-clockwise order by default.
+
+  `New in version 1.2.9`.
+
+For example:
+
+.. sourcecode:: pycon
+
+  >>> from shapely.geometry import box
+  >>> b = box(0.0, 0.0, 1.0, 1.0)
+  >>> b
+  <shapely.geometry.polygon.Polygon object at 0x...>
+  >>> list(b.exterior.coords)
+  [(1.0, 0.0), (1.0, 1.0), (0.0, 1.0), (0.0, 0.0), (1.0, 0.0)]
+
+This is the first appearance of an explicit polygon handedness in Shapely.
+
+To obtain a polygon with a known orientation, use 
+:func:`shapely.geometry.polygon.orient()`:
+
+.. function:: shapely.geometry.polygon.orient(polygon, sign=1.0)
+
+  Returns a properly oriented copy of the given polygon. The signed area of the
+  result will have the given sign. A sign of 1.0 means that the coordinates of the
+  product's exterior ring will be oriented counter-clockwise.
+
+  `New in version 1.2.10`.
+
 .. _collections:
 
 Collections
@@ -810,6 +844,29 @@ example will be shown for each.
   >>> Point(0, 0).has_z
   False
   >>> Point(0, 0, 0).has_z
+  True
+
+.. attribute:: object.is_ccw
+
+  Returns ``True`` if coordinates are in counter-clockwise order (bounding a region
+  with positive signed area). This method applies to `LinearRing` objects only.
+
+  `New in version 1.2.10`.
+
+.. sourcecode:: pycon
+
+  >>> LinearRing([(1,0), (1,1), (0,0)]).is_ccw
+  True
+
+A ring with an undesired orientation can be reversed like this:
+
+.. sourcecode:: pycon
+
+  >>> ring = LinearRing([(0,0), (1,1), (1,0)])
+  >>> ring.is_ccw
+  False
+  >>> ring.coords = list(ring.coords)[::-1]
+  >>> ring.is_ccw
   True
 
 .. attribute:: object.is_empty
@@ -1732,6 +1789,34 @@ For example, using the same `GeoThing` class:
   'Point'
   >>> m['coordinates']
   (0.0, 0.0)}
+
+
+Performance
+===========
+
+Shapely uses the GEOS_ library for all operations. GEOS is written in C++ and
+used in many applications and you can expect that all operations are highly
+optimized. Only the creation of new geometries involves some overhead that
+might slow down your code, if you create lots of geometries with a large number
+of coordinates.
+
+.. versionadded:: 1.2.10
+
+The :mod:`shapely.speedups` module contains performance enhancements written
+in C. They are automaticaly installed when Python has access to a compiler
+during installation.
+
+You can check if the speedups are installed with the :attr:`available`
+attribute. To enable the speedups call :func:`enable`. You can revert to the
+default implementation with :func:`disable`.
+
+.. sourcecode:: pycon
+
+  >>> from shapely import speedups
+  >>> speedups.available
+  True
+  >>> speedups.enable()
+
 
 Conclusion
 ==========
