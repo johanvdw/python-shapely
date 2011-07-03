@@ -14,7 +14,6 @@ Architecture: any
 Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends}, python (>=2.5) | python-ctypes, libgeos-c1 (>= 3.1.0)
 Suggests: python-numpy, python-matplotlib
 Enhances: python-numpy
-Breaks: ${python:Breaks}
 Description: geometric objects, predicates, and operations
  Shapely is a package for manipulation and analysis of 2D features.
  Its capabilities include:
