@@ -2,8 +2,7 @@ Source: python-shapely
 Section: python
 Priority: optional
 Maintainer: Pietro Battiston <me@pietrobattiston.it>
-Build-Depends: debhelper (>= 7.0.50)
-Build-Depends-Indep: python-setuptools (>= 0.6), libgeos-c1 (>= 3.1.0), python-numpy, python (>= 2.6.6-3)
+Build-Depends: debhelper (>= 7.0.50), python-setuptools (>= 0.6), libgeos-c1 (>= 3.1.0), libgeos-dev, python-numpy, python (>= 2.6.6-3), python-all-dev
 Standards-Version: 3.9.2
 X-Python-Version: >= 2.5
 Homepage: http://trac.gispython.org/lab/wiki/Shapely
@@ -11,8 +10,8 @@ Vcs-Browser: http://git.debian.org/?p=collab-maint/python-shapely.git
 Vcs-Git: git://git.debian.org/git/collab-maint/python-shapely.git
 
 Package: python-shapely
-Architecture: all
-Depends: ${python:Depends}, ${misc:Depends}, python (>=2.5) | python-ctypes, libgeos-c1 (>= 3.1.0)
+Architecture: any
+Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends}, python (>=2.5) | python-ctypes, libgeos-c1 (>= 3.1.0)
 Suggests: python-numpy, python-matplotlib
 Enhances: python-numpy
 Breaks: ${python:Breaks}
