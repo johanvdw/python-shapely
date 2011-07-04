@@ -1,1 +1,2 @@
 disable-broken-locale-test
+rerun-cython

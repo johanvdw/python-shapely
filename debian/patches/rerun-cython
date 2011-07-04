@@ -1,0 +1,28 @@
+Description: Generate .pyx at compile time.
+ Shapely is distributed with the .pyx Cython file already transformed into a .c
+ file. This patch imports the modified "build_ext" from the Cython Distutils,
+ and then feeds it the .pyx (rather than .c) file.
+Author: Pietro Battiston <me@pietrobattiston.it>
+Forwarded: not-needed
+Last-Update: <2011-07-04>
+
+--- python-shapely-1.2.10.orig/setup.py
++++ python-shapely-1.2.10/setup.py
+@@ -12,7 +12,7 @@ except:
+ from distutils.errors import CCompilerError, DistutilsExecError, \
+     DistutilsPlatformError
+ from setuptools.extension import Extension
+-from setuptools.command.build_ext import build_ext
++from Cython.Distutils import build_ext
+ from setuptools import setup, find_packages
+ import sys
+ 
+@@ -92,7 +92,7 @@ if sys.platform == 'win32':
+ else:
+     ext_modules = [
+         Extension("shapely.speedups._speedups", 
+-              ["shapely/speedups/_speedups.c"], libraries=['geos_c']),
++              ["shapely/speedups/_speedups.pyx"], libraries=['geos_c']),
+     ]
+ 
+ try:
