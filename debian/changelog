@@ -2,6 +2,7 @@ python-shapely (1.2.10-1) unstable; urgency=low
 
   * New upstream release.
     - Introduces Cython speedups: updated dependencies accordingly.
+    - Patched setup.py to recreate .c file from .pyx file.
 
  -- Pietro Battiston <me@pietrobattiston.it>  Thu, 30 Jun 2011 08:57:03 +0200
 
