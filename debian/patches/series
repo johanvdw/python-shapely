@@ -1,2 +1,3 @@
 0001-disable-broken-locale-test.patch
 0002-rerun-cython.patch
+0003-Fix-test-for-Python-2.7.patch
