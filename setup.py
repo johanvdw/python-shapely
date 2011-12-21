@@ -15,14 +15,15 @@ from setuptools.extension import Extension
 from setuptools.command.build_ext import build_ext
 from setuptools import setup, find_packages
 import sys
+import platform
 
-readme_text = file('README.txt', 'rb').read()
+readme_text = file('README.rst', 'rb').read()
 changes_text = file('CHANGES.txt', 'rb').read()
 
 setup_args = dict(
     metadata_version    = '1.2',
     name                = 'Shapely',
-    version             = '1.2.10',
+    version             = '1.2.13',
     requires_python     = '>=2.5,<3',
     requires_external   = 'libgeos_c (>=3.1)', 
     description         = 'Geometric objects, predicates, and operations',
@@ -32,7 +33,7 @@ setup_args = dict(
     author_email        = 'sean.gillies@gmail.com',
     maintainer          = 'Sean Gillies',
     maintainer_email    = 'sean.gillies@gmail.com',
-    url                 = 'http://trac.gispython.org/lab/wiki/Shapely',
+    url                 = 'https://github.com/sgillies/shapely',
     long_description    = readme_text + "\n" + changes_text,
     packages            = find_packages(),
     test_suite          = 'shapely.tests.test_suite',
@@ -51,11 +52,15 @@ setup_args = dict(
 if sys.platform == 'win32':
     if '(AMD64)' in sys.version:
         setup_args.update(
-            data_files=[('DLLs', glob.glob('DLLs_AMD64/*.dll'))]
+            data_files=[('DLLs', glob.glob('DLLs_AMD64_VC9/*.dll'))]
             )
+    elif platform.python_version().startswith('2.5.'):
+        setup_args.update(
+            data_files=[('DLLs', glob.glob('DLLs_x86_VC7/*.dll'))]
+            )       
     else:
         setup_args.update(
-            data_files=[('DLLs', glob.glob('DLLs_x86/*.dll'))]
+            data_files=[('DLLs', glob.glob('DLLs_x86_VC9/*.dll'))]
             )
 
 
@@ -88,6 +93,14 @@ class ve_build_ext(build_ext):
             raise BuildFailed(x)
 
 if sys.platform == 'win32':
+    # geos DLL is geos.dll instead of geos_c.dll on Windows
+    ext_modules = [
+        Extension("shapely.speedups._speedups",
+              ["shapely/speedups/_speedups.c"], libraries=['geos']),
+    ]
+elif (hasattr(platform, 'python_implementation') 
+    and platform.python_implementation() == 'PyPy'):
+    # python_implementation >= 2.6
     ext_modules = []
 else:
     ext_modules = [
