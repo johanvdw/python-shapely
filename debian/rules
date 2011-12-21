@@ -9,5 +9,7 @@
 
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
-	python setup.py test
+	for ver in `pyversions -vr`; do \
+	    python$$ver setup.py test; \
+	done
 endif
