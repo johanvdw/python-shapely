@@ -1,2 +1,2 @@
-disable-broken-locale-test
-rerun-cython
+0001-disable-broken-locale-test.patch
+0002-rerun-cython.patch
