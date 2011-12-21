@@ -25,13 +25,13 @@ cdef extern from "geos_c.h":
     GEOSGeometry *GEOSGeom_createLinearRing_r(GEOSContextHandle_HS *, GEOSCoordSequence *)
     void GEOSGeom_destroy_r(GEOSContextHandle_HS *, GEOSGeometry *)
 
-cdef inline GEOSGeometry *cast_geom(long geom_addr):
+cdef inline GEOSGeometry *cast_geom(unsigned long geom_addr):
     return <GEOSGeometry *>geom_addr
 
-cdef inline GEOSContextHandle_HS *cast_handle(long handle_addr):
+cdef inline GEOSContextHandle_HS *cast_handle(unsigned long handle_addr):
     return <GEOSContextHandle_HS *>handle_addr
 
-cdef inline GEOSCoordSequence *cast_seq(long handle_addr):
+cdef inline GEOSCoordSequence *cast_seq(unsigned long handle_addr):
     return <GEOSCoordSequence *>handle_addr
 
 def destroy(geom):
@@ -60,9 +60,9 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
 
         # Make pointer to the coordinate array
         if isinstance(array['data'], ctypes.Array):
-            cp = <double *><long>ctypes.addressof(array['data'])
+            cp = <double *><unsigned long>ctypes.addressof(array['data'])
         else:
-            cp = <double *><long>array['data'][0]
+            cp = <double *><unsigned long>array['data'][0]
 
         # Create a coordinate sequence
         if update_geom is not None:
@@ -133,7 +133,7 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
     if update_geom is not None:
         return None
     else:
-        return <long>GEOSGeom_createLineString_r(handle, cs), n
+        return <unsigned long>GEOSGeom_createLineString_r(handle, cs), n
 
 
 def geos_linearring_from_py(ob, update_geom=None, update_ndim=0):
@@ -155,9 +155,9 @@ def geos_linearring_from_py(ob, update_geom=None, update_ndim=0):
 
         # Make pointer to the coordinate array
         if isinstance(array['data'], ctypes.Array):
-            cp = <double *><long>ctypes.addressof(array['data'])
+            cp = <double *><unsigned long>ctypes.addressof(array['data'])
         else:
-            cp = <double *><long>array['data'][0]
+            cp = <double *><unsigned long>array['data'][0]
 
         # Add closing coordinates to sequence?
         if cp[0] != cp[m*n-n] or cp[1] != cp[m*n-n+1]:
@@ -265,12 +265,12 @@ def geos_linearring_from_py(ob, update_geom=None, update_ndim=0):
     if update_geom is not None:
         return None
     else:
-        return <long>GEOSGeom_createLinearRing_r(handle, cs), n
+        return <unsigned long>GEOSGeom_createLinearRing_r(handle, cs), n
 
 
 def coordseq_ctypes(self):
     cdef int i, n, m
-    cdef double temp
+    cdef double temp = 0
     cdef GEOSContextHandle_HS *handle = cast_handle(lgeos.geos_handle)
     cdef GEOSCoordSequence *cs
     cdef double *data_p
@@ -281,7 +281,7 @@ def coordseq_ctypes(self):
     data = array_type()
     
     cs = cast_seq(self._cseq)
-    data_p = <double *><long>ctypes.addressof(data)
+    data_p = <double *><unsigned long>ctypes.addressof(data)
     
     for i in xrange(m):
         GEOSCoordSeq_getX_r(handle, cs, i, &temp)
