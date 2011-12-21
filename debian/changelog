@@ -2,6 +2,9 @@ python-shapely (1.2.13-1) unstable; urgency=low
 
   * New upstream release.
   * Now using gbp-pq to manage patches.
+  * Fixed test for Python 2.7 with upstream patch (Closes: #652183).
+  * Tests are now ran with all supported Python versions.
+  * Updated debian/copyright format.
 
  -- Pietro Battiston <me@pietrobattiston.it>  Wed, 21 Dec 2011 16:17:20 +0100
 
