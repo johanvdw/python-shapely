@@ -1,0 +1,29 @@
+From: sgillies <sean.gillies@gmail.com>
+Date: Sat, 10 Mar 2012 11:22:25 -0800
+Subject: Fix for Debian bug #663210.
+
+There's no need for Shapely to be incidentally testing the numerical
+details of GEOS, so this patch cuts that out of the test.
+
+Signed-off-by: Pietro Battiston <me@pietrobattiston.it>
+---
+ shapely/tests/attribute-chains.txt |    6 ++----
+ 1 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/shapely/tests/attribute-chains.txt b/shapely/tests/attribute-chains.txt
+index 9b7933d..442cc2b 100644
+--- a/shapely/tests/attribute-chains.txt
++++ b/shapely/tests/attribute-chains.txt
+@@ -28,10 +28,8 @@ anonymous references.
+     >>> print list(p.interiors[0].coords)
+     [(-0.25, 0.25), (-0.25, 0.75), (-0.75, 0.75), (-0.75, 0.25), (-0.25, 0.25)]
+     >>> xy = list(p.interiors[0].buffer(1).exterior.coords)[0]
+-    >>> xy[0] + 0.25 <= 1.0e-7
+-    True
+-    >>> xy[1] + 0.75 <= 1.0e-7
+-    True
++    >>> len(xy)
++    2
+ 
+ Test multiple operators, boundary of a buffer
+ 
