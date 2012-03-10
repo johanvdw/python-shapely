@@ -13,3 +13,7 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	    python$$ver setup.py test; \
 	done
 endif
+
+override_dh_auto_build:
+	rm shapely/speedups/_speedups.c
+	dh_auto_build
