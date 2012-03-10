@@ -46,4 +46,3 @@ index ebbc024..0000000
 -Reset locale
 -
 -  >>> _ = locale.setlocale(locale.LC_ALL, '')
--- 
