@@ -1,16 +1,17 @@
 Metadata-Version: 1.0
 Name: Shapely
-Version: 1.2.13
+Version: 1.2.14
 Summary: Geometric objects, predicates, and operations
 Home-page: https://github.com/sgillies/shapely
 Author: Sean Gillies
 Author-email: sean.gillies@gmail.com
 License: BSD
-Description: =======
-        Shapely
-        =======
+Description: ======
+        README
+        ======
         
-        PostGIS-ish operations outside a database context for Pythoneers and Pythonistas
+        PostGIS-ish operations outside a database context for Pythoneers and
+        Pythonistas.
         
         .. image:: http://farm3.static.flickr.com/2738/4511827859_b5822043b7_o_d.png
         :width: 800
@@ -107,7 +108,7 @@ Description: =======
         Testing
         =======
         
-        Shapely uses a Zope-stye suite of unittests and doctests, excercised via
+        Shapely uses a Zope-stye suite of unittests and doctests, exercised via
         setup.py.::
         
         $ python setup.py test
@@ -118,7 +119,7 @@ Description: =======
         Support
         =======
         
-        Bugs may be reported and questions asked via https://github.com/sgillies/shapely.
+        Bugs may be reported and questions asked via https://github.com/Toblerity/Shapely.
         
         Credits
         =======
@@ -128,22 +129,23 @@ Description: =======
         * Sean Gillies
         * Aron Bierbaum
         * Kai Lautaportti
+        * Oliver Tonnhofer
         
         Patches contributed by:
         
         * Howard Butler
-        * Fr |eacute| d |eacute| ric Junod
-        * |Eacute| ric Lemoine
+        * Frédéric Junod
+        * Éric Lemoine
         * Jonathan Tartley
         * Kristian Thy
-        * Oliver Tonnhofer
+        * Mike Toews (https://github.com/mwtoews)
         
         Additional help from:
         
         * Justin Bronn (GeoDjango) for ctypes inspiration
         * Martin Davis (JTS)
         * Jaakko Salli for the Windows distributions
-        * Sandro Santilli, Mateusz Loskot, Paul Ramsey, et al (GEOS Project)
+        * Sandro Santilli, Mateusz Loskot, Paul Ramsey, et al (GEOS_ Project)
         
         Major portions of this work were supported by a grant (for Pleiades_) from the
         U.S. National Endowment for the Humanities (http://www.neh.gov).
@@ -153,20 +155,24 @@ Description: =======
         .. _GEOS: http://trac.osgeo.org/geos/
         .. _example apps: http://trac.gispython.org/lab/wiki/Examples
         .. _wiki: http://trac.gispython.org/lab/wiki/Shapely
-        .. _manual: http://gispython.org/shapely/docs/1.2
-        .. |eacute| unicode:: U+00E9
-        :trim:
-        .. |Eacute| unicode:: U+00C9
-        :trim:
+        .. _manual: http://toblerity.github.com/shapely/manual.html
         .. _Pleiades: http://pleiades.stoa.org
         
+        
+        Changes
         =======
-        CHANGES
-        =======
+        
+        1.2.14 (2012-01-23)
+        -------------------
+        - A geometry's coords property is now sliceable, yielding a list of coordinate
+        values.
+        - Homogeneous collections are now sliceable, yielding a new collection of the
+        same type.
         
         1.2.13 (2011-09-16)
         -------------------
-        - Fixed errors in speedups on 32bit systems when GEOS references memory above 2GB.
+        - Fixed errors in speedups on 32bit systems when GEOS references memory above
+        2GB.
         - Add shapely.__version__ attribute.
         - Update the manual.
         
@@ -301,9 +307,7 @@ Description: =======
         - Prototype libgeos_c functions in a way that lets py2exe apps import shapely
         (#189).
         
-        =========================
         1.2 Branched (2009-09-19)
-        =========================
         
         1.0.12 (2009-04-09)
         -------------------

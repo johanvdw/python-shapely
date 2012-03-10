@@ -1,8 +1,9 @@
-=======
-Shapely
-=======
+======
+README
+======
 
-PostGIS-ish operations outside a database context for Pythoneers and Pythonistas
+PostGIS-ish operations outside a database context for Pythoneers and
+Pythonistas.
 
 .. image:: http://farm3.static.flickr.com/2738/4511827859_b5822043b7_o_d.png
    :width: 800
@@ -99,7 +100,7 @@ Numpy arrays can also be adapted to Shapely linestrings::
 Testing
 =======
 
-Shapely uses a Zope-stye suite of unittests and doctests, excercised via
+Shapely uses a Zope-stye suite of unittests and doctests, exercised via
 setup.py.::
 
   $ python setup.py test
@@ -110,7 +111,7 @@ supported well by nose.
 Support
 =======
 
-Bugs may be reported and questions asked via https://github.com/sgillies/shapely.
+Bugs may be reported and questions asked via https://github.com/Toblerity/Shapely.
 
 Credits
 =======
@@ -120,22 +121,23 @@ Shapely is written by:
 * Sean Gillies
 * Aron Bierbaum
 * Kai Lautaportti
+* Oliver Tonnhofer
 
 Patches contributed by:
 
 * Howard Butler
-* Fr |eacute| d |eacute| ric Junod
-* |Eacute| ric Lemoine
+* Frédéric Junod
+* Éric Lemoine
 * Jonathan Tartley
 * Kristian Thy
-* Oliver Tonnhofer
+* Mike Toews (https://github.com/mwtoews)
 
 Additional help from:
 
 * Justin Bronn (GeoDjango) for ctypes inspiration
 * Martin Davis (JTS)
 * Jaakko Salli for the Windows distributions
-* Sandro Santilli, Mateusz Loskot, Paul Ramsey, et al (GEOS Project)
+* Sandro Santilli, Mateusz Loskot, Paul Ramsey, et al (GEOS_ Project)
 
 Major portions of this work were supported by a grant (for Pleiades_) from the
 U.S. National Endowment for the Humanities (http://www.neh.gov).
@@ -145,9 +147,6 @@ U.S. National Endowment for the Humanities (http://www.neh.gov).
 .. _GEOS: http://trac.osgeo.org/geos/
 .. _example apps: http://trac.gispython.org/lab/wiki/Examples
 .. _wiki: http://trac.gispython.org/lab/wiki/Shapely
-.. _manual: http://gispython.org/shapely/docs/1.2
-.. |eacute| unicode:: U+00E9
-   :trim:
-.. |Eacute| unicode:: U+00C9
-   :trim:
+.. _manual: http://toblerity.github.com/shapely/manual.html
 .. _Pleiades: http://pleiades.stoa.org
+
