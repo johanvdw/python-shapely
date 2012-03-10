@@ -2,6 +2,7 @@ From: Pietro Battiston <me@pietrobattiston.it>
 Date: Wed, 21 Dec 2011 15:29:24 +0100
 Subject: disable-broken-locale-test
 
+The following test assumes that the locale "pt_BR.UTF-8" is
 installed, and fails otherwise. Since there is no "non-trivial" locale which we
 can assume is installed, the only way to fix this seems to disable it.
 Forwarded, but upstream seems willing to not drop the test.
