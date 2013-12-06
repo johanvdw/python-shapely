@@ -6,8 +6,8 @@ Shapely is distributed with the .pyx Cython file already transformed into a .c
 file. This patch imports the modified "build_ext" from the Cython Distutils,
 and then feeds it the .pyx (rather than .c) file.
 ---
- setup.py |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
+ setup.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/setup.py b/setup.py
 index 328c0b6..0b5f17f 100644

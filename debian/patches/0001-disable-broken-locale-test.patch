@@ -9,8 +9,8 @@ Forwarded, but upstream seems willing to not drop the test.
 Author: Pietro Battiston <me@pietrobattiston.it>
 Forwarded: yes
 ---
- shapely/tests/wkt_locale.txt |   28 ----------------------------
- 1 files changed, 0 insertions(+), 28 deletions(-)
+ shapely/tests/wkt_locale.txt | 28 ----------------------------
+ 1 file changed, 28 deletions(-)
  delete mode 100644 shapely/tests/wkt_locale.txt
 
 diff --git a/shapely/tests/wkt_locale.txt b/shapely/tests/wkt_locale.txt

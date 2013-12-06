@@ -7,8 +7,8 @@ verifying they form a MultiPolygon: depending on the random
 scattering, they can instead (rarely) form a Polygon, and in that
 case the test fails. This is a (hacky?) patch solving the problem.
 ---
- shapely/tests/cascaded_union.txt |    5 +++--
- 1 files changed, 3 insertions(+), 2 deletions(-)
+ shapely/tests/cascaded_union.txt | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/shapely/tests/cascaded_union.txt b/shapely/tests/cascaded_union.txt
 index 7d54f31..2446349 100644

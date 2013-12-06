@@ -7,8 +7,8 @@ details of GEOS, so this patch cuts that out of the test.
 
 Signed-off-by: Pietro Battiston <me@pietrobattiston.it>
 ---
- shapely/tests/attribute-chains.txt |    6 ++----
- 1 files changed, 2 insertions(+), 4 deletions(-)
+ shapely/tests/attribute-chains.txt | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/shapely/tests/attribute-chains.txt b/shapely/tests/attribute-chains.txt
 index 9b7933d..442cc2b 100644
