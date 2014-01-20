@@ -2,23 +2,23 @@
 Geometry factories based on the geo interface
 """
 
-from point import Point, asPoint
-from linestring import LineString, asLineString
-from polygon import Polygon, asPolygon
-from multipoint import MultiPoint, asMultiPoint
-from multilinestring import MultiLineString, asMultiLineString
-from multipolygon import MultiPolygon, MultiPolygonAdapter
+from .point import Point, asPoint
+from .linestring import LineString, asLineString
+from .polygon import Polygon, asPolygon
+from .multipoint import MultiPoint, asMultiPoint
+from .multilinestring import MultiLineString, asMultiLineString
+from .multipolygon import MultiPolygon, MultiPolygonAdapter
 
 
 def box(minx, miny, maxx, maxy, ccw=True):
-    """Return a rectangular polygon with configurable normal vector"""
+    """Returns a rectangular polygon with configurable normal vector"""
     coords = [(maxx, miny), (maxx, maxy), (minx, maxy), (minx, miny)]
     if not ccw:
         coords = coords[::-1]
     return Polygon(coords)
 
 def shape(context):
-    """Return a new, independent geometry with coordinates *copied* from the
+    """Returns a new, independent geometry with coordinates *copied* from the
     context.
     """
     if hasattr(context, "__geo_interface__"):

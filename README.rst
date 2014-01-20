@@ -1,31 +1,28 @@
-======
-README
-======
+=======
+Shapely
+=======
 
-PostGIS-ish operations outside a database context for Pythoneers and
-Pythonistas.
+Manipulation and analysis of geometric objects in the Cartesian plane.
 
-.. image:: http://farm3.static.flickr.com/2738/4511827859_b5822043b7_o_d.png
+.. image:: http://farm3.staticflickr.com/2738/4511827859_b5822043b7_o_d.png
    :width: 800
    :height: 400
 
 Shapely is a BSD-licensed Python package for manipulation and analysis of
 planar geometric objects. It is based on the widely deployed GEOS_ (the engine
-of PostGIS_) and JTS_ (from which GEOS is ported) libraries. This C dependency
-is traded for the ability to execute with blazing speed. Shapely is not
+of PostGIS_) and JTS_ (from which GEOS is ported) libraries. Shapely is not
 concerned with data formats or coordinate systems, but can be readily
 integrated with packages that are. For more details, see:
 
-* Shapely wiki_
 * Shapely manual_
 * Shapely `example apps`_
 
-Dependencies
+Requirements
 ============
 
-Shapely 1.2 depends on:
+Shapely 1.3 requires
 
-* Python >=2.5,<3
+* Python >=2.6 (including Python 3.x)
 * libgeos_c >=3.1 (3.0 and below have not been tested, YMMV)
 
 Installation
@@ -40,6 +37,12 @@ is on the system library path, and install from the Python package index::
 or from a source distribution with the setup script::
 
   $ python setup.py install
+
+.. warning:: Windows users:
+   do not under any circumstances use pip (or easy_install) to uninstall
+   Shapely versions < 1.2.17. Due to the way Shapely used to install its GEOS
+   DLL and a distribute or setuptools bug, your Python installation may be
+   broken by an uninstall command. Shapely 1.2.17 will uninstall safely.
 
 Usage
 =====
@@ -57,7 +60,7 @@ buffering a point::
 See the manual_ for comprehensive usage snippets and the dissolve.py and
 intersect.py `example apps`_.
 
-Integration 
+Integration
 ===========
 
 Shapely does not read or write data files, but it can serialize and deserialize
@@ -80,7 +83,7 @@ provide the Numpy array interface.::
          ...
          [  1.00000000e+01,   0.00000000e+00]])
 
-That yields a numpy array of [x, y] arrays. This is not always exactly what one
+That yields a Numpy array of [x, y] arrays. This is not always exactly what one
 wants for plotting shapes with Matplotlib (for example), so Shapely 1.2 adds
 a `xy` property for obtaining separate arrays of coordinate x and y values.::
 
@@ -97,13 +100,35 @@ Numpy arrays can also be adapted to Shapely linestrings::
   >>> asLineString(ag).wkt
   'LINESTRING (10.0000000000000000 0.0000000000000000, ...)'
 
-Testing
-=======
+Shapely can also integrate with other Python GIS packages using data modeled
+after GeoJSON.
+
+.. sourcecode:: pycon
+
+  >>> import json
+  >>> from shapely.geometry import mapping, shape
+  >>> s = shape(json.loads('{"type": "Point", "coordinates": [0.0, 0.0]}'))
+  >>> s
+  <shapely.geometry.point.Point object at 0x...>
+  >>> print(json.dumps(mapping(s)))
+  {"type": "Point", "coordinates": [0.0, 0.0]}
+
+Development and Testing
+=======================
+
+Dependecies for developing Shapely are listed in requirements-dev.txt. Cython
+and Numpy are not required for production installations, only for development.
+Use of a virtual environment is strongly recommended.::
+
+  $ virtualenv .
+  $ source bin/activate
+  (env)$ pip install -r requirements-dev.txt
+  (env)$ python setup.py develop
 
 Shapely uses a Zope-stye suite of unittests and doctests, exercised via
 setup.py.::
 
-  $ python setup.py test
+  (env)$ python setup.py test
 
 Nosetests won't run the tests properly; Zope doctest suites are not currently
 supported well by nose.
@@ -111,42 +136,17 @@ supported well by nose.
 Support
 =======
 
-Bugs may be reported and questions asked via https://github.com/Toblerity/Shapely.
+Please discuss Shapely with us at
+http://lists.gispython.org/mailman/listinfo/community.
 
-Credits
-=======
+Bugs may be reported at https://github.com/Toblerity/Shapely.
 
-Shapely is written by:
-
-* Sean Gillies
-* Aron Bierbaum
-* Kai Lautaportti
-* Oliver Tonnhofer
-
-Patches contributed by:
-
-* Howard Butler
-* Frédéric Junod
-* Éric Lemoine
-* Jonathan Tartley
-* Kristian Thy
-* Mike Toews (https://github.com/mwtoews)
-
-Additional help from:
-
-* Justin Bronn (GeoDjango) for ctypes inspiration
-* Martin Davis (JTS)
-* Jaakko Salli for the Windows distributions
-* Sandro Santilli, Mateusz Loskot, Paul Ramsey, et al (GEOS_ Project)
-
-Major portions of this work were supported by a grant (for Pleiades_) from the
-U.S. National Endowment for the Humanities (http://www.neh.gov).
+.. include:: ../CREDITS.txt
 
 .. _JTS: http://www.vividsolutions.com/jts/jtshome.htm
 .. _PostGIS: http://postgis.org
 .. _GEOS: http://trac.osgeo.org/geos/
-.. _example apps: http://trac.gispython.org/lab/wiki/Examples
-.. _wiki: http://trac.gispython.org/lab/wiki/Shapely
+.. _example apps: https://github.com/sgillies/shapely/tree/master/shapely/examples
 .. _manual: http://toblerity.github.com/shapely/manual.html
 .. _Pleiades: http://pleiades.stoa.org
 

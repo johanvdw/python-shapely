@@ -1,11 +1,17 @@
 """Polygons and their linear ring components
 """
 
+import sys
+
+if sys.version_info[0] < 3:
+    range = xrange
+
 from ctypes import c_double, c_void_p, cast, POINTER
 from ctypes import ArgumentError
 import weakref
 
 from shapely.algorithms.cga import signed_area
+from shapely.coords import required
 from shapely.geos import lgeos
 from shapely.geometry.base import BaseGeometry
 from shapely.geometry.linestring import LineString, LineStringAdapter
@@ -65,8 +71,14 @@ class LinearRing(LineString):
 
     @property
     def is_ccw(self):
-        """Brand new"""
+        """True is the ring is oriented counter clock-wise"""
         return bool(self.impl['is_ccw'](self))
+
+    @property
+    def is_simple(self):
+        """True if the geometry is simple, meaning that any self-intersections
+        are only at boundary points, else False"""
+        return LineString(self).is_simple
 
 
 class LinearRingAdapter(LineStringAdapter):
@@ -113,13 +125,16 @@ class InteriorRingSequence(object):
         self._length = self.__len__()
         return self
 
-    def next(self):
+    def __next__(self):
         if self._index < self._length:
             ring = self._get_ring(self._index)
             self._index += 1
             return ring
         else:
             raise StopIteration 
+
+    if sys.version_info[0] < 3:
+        next = __next__
 
     def __len__(self):
         return lgeos.GEOSGetNumInteriorRings(self._geom)
@@ -137,7 +152,7 @@ class InteriorRingSequence(object):
         elif isinstance(key, slice):
             res = []
             start, stop, stride = key.indices(m)
-            for i in xrange(start, stop, stride):
+            for i in range(start, stop, stride):
                 res.append(self._get_ring(i))
             return res
         else:
@@ -309,6 +324,9 @@ def orient(polygon, sign=1.0):
     return Polygon(rings[0], rings[1:])
 
 def geos_linearring_from_py(ob, update_geom=None, update_ndim=0):
+    # If numpy is present, we use numpy.require to ensure that we have a
+    # C-continguous array that owns its data. View data will be copied.
+    ob = required(ob)
     try:
         # From array protocol
         array = ob.__array_interface__
@@ -344,7 +362,7 @@ def geos_linearring_from_py(ob, update_geom=None, update_ndim=0):
             cs = lgeos.GEOSCoordSeq_create(M, n)
 
         # add to coordinate sequence
-        for i in xrange(m):
+        for i in range(m):
             # Because of a bug in the GEOS C API, 
             # always set X before Y
             lgeos.GEOSCoordSeq_setX(cs, i, cp[n*i])
@@ -363,7 +381,12 @@ def geos_linearring_from_py(ob, update_geom=None, update_ndim=0):
             
     except AttributeError:
         # Fall back on list
-        m = len(ob)
+        try:
+            m = len(ob)
+        except TypeError:  # Iterators, e.g. Python 3 zip
+            ob = list(ob)
+            m = len(ob)
+
         n = len(ob[0])
         if m < 3:
             raise ValueError(
@@ -387,7 +410,7 @@ def geos_linearring_from_py(ob, update_geom=None, update_ndim=0):
             cs = lgeos.GEOSCoordSeq_create(M, n)
         
         # add to coordinate sequence
-        for i in xrange(m):
+        for i in range(m):
             coords = ob[i]
             # Because of a bug in the GEOS C API, 
             # always set X before Y
@@ -420,7 +443,7 @@ def update_linearring_from_py(geom, ob):
 def geos_polygon_from_py(shell, holes=None):
     if shell is not None:
         geos_shell, ndim = geos_linearring_from_py(shell)
-        if holes:
+        if holes is not None and len(holes) > 0:
             ob = holes
             L = len(ob)
             exemplar = ob[0]
@@ -428,14 +451,16 @@ def geos_polygon_from_py(shell, holes=None):
                 N = len(exemplar[0])
             except TypeError:
                 N = exemplar._ndim
-            assert L >= 1
-            assert N == 2 or N == 3
+            if not L >= 1:
+                raise ValueError("number of holes must be non zero")
+            if not N in (2, 3):
+                raise ValueError("insufficiant coordinate dimension")
 
             # Array of pointers to ring geometries
             geos_holes = (c_void_p * L)()
     
             # add to coordinate sequence
-            for l in xrange(L):
+            for l in range(L):
                 geom, ndim = geos_linearring_from_py(ob[l])
                 geos_holes[l] = cast(geom, c_void_p)
         else:

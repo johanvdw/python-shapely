@@ -1,6 +1,56 @@
-=======
 Changes
 =======
+
+1.3.0 (2013-12-31)
+------------------
+- Include support for Python 3.2 and 3.3 (#56), minimum version is now 2.6.
+- Switch to GEOS WKT/WKB Reader/Writer API, with defaults changed to enable 3D
+  output dimensions, and to 'trim' WKT output for GEOS >=3.3.0.
+- Use GEOS version instead of GEOS C API version to determine library
+  capabilities (#65).
+
+1.2.19 (2013-12-30)
+-------------------
+- Add buffering style options (#55).
+
+1.2.18 (2013-07-23)
+--------------------
+- Add shapely.ops.transform.
+- Permit empty sequences in collection constructors (#49, #50).
+- Individual polygons in MultiPolygon.__geo_interface__ are changed to tuples
+  to match Polygon.__geo_interface__ (#51).
+- Add shapely.ops.polygonize_full (#57).
+
+1.2.17 (2013-01-27)
+-------------------
+- Avoid circular import between wkt/wkb and geometry.base by moving calls
+  to GEOS serializers to the latter module.
+- Set _ndim when unpickling (issue #6).
+- Don't install DLLs to Python's DLL directory (#37).
+- Add affinity module of affine transformation (#31).
+- Fix NameError that blocked installation with PyPy (#40, #41).
+
+1.2.16 (2012-09-18)
+-------------------
+- Add ops.unary_union function.
+- Alias ops.cascaded_union to ops.unary_union when GEOS CAPI >= (1,7,0).
+- Add geos_version_string attribute to shapely.geos.
+- Ensure parent is set when child geometry is accessed.
+- Generate _speedups.c using Cython when building from repo when missing,
+  stale, or the build target is "sdist".
+- The is_simple predicate of invalid, self-intersecting linear rings now
+  returns ``False``.
+- Remove VERSION.txt from repo, it's now written by the distutils setup script
+  with value of shapely.__version__.
+
+1.2.15 (2012-06-27)
+-------------------
+- Eliminate numerical sensitivity in a method chaining test (Debian bug
+  #663210).
+- Account for cascaded union of random buffered test points being a polygon
+  or multipolygon (Debian bug #666655).
+- Use Cython to build speedups if it is installed.
+- Avoid stumbling over SVN revision numbers in GEOS C API version strings.
 
 1.2.14 (2012-01-23)
 -------------------

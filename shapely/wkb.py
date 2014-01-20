@@ -1,38 +1,37 @@
 """Load/dump geometries using the well-known binary (WKB) format
 """
 
-from ctypes import pointer, c_size_t, c_char_p, c_void_p
-
-from shapely.geos import lgeos, ReadingError
-
+from shapely import geos
 
 # Pickle-like convenience functions
 
-def deserialize(data):
-    geom = lgeos.GEOSGeomFromWKB_buf(c_char_p(data), c_size_t(len(data)));
-    if not geom:
-        raise ReadingError(
-            "Could not create geometry because of errors while reading input.")
-    return geom
+def loads(data, hex=False):
+    """Load a geometry from a WKB byte string, or hex-encoded string if
+    ``hex=True``.
+    """
+    reader = geos.WKBReader(geos.lgeos)
+    if hex:
+        return reader.read_hex(data)
+    else:
+        return reader.read(data)
 
-def loads(data):
-    """Load a geometry from a WKB string."""
-    from shapely.geometry.base import geom_factory
-    return geom_factory(deserialize(data))
-
-def load(fp):
+def load(fp, hex=False):
     """Load a geometry from an open file."""
     data = fp.read()
-    return loads(data)
+    return loads(data, hex=hex)
 
-def dumps(ob):
-    """Dump a WKB representation of a geometry to a byte string."""
-    if ob is None or ob._geom is None:
-        raise ValueError("Null geometry supports no operations")
-    size = c_size_t()
-    return lgeos.GEOSGeomToWKB_buf(c_void_p(ob._geom), pointer(size))
+def dumps(ob, hex=False, **kw):
+    """Dump a WKB representation of a geometry to a byte string, or a
+    hex-encoded string if ``hex=True``.
 
-def dump(ob, fp):
+    See available keyword output settings in ``shapely.geos.WKBWriter``."""
+    writer = geos.WKBWriter(geos.lgeos, **kw)
+    if hex:
+        return writer.write_hex(ob)
+    else:
+        return writer.write(ob)
+
+
+def dump(ob, fp, hex=False, **kw):
     """Dump a geometry to an open file."""
-    fp.write(dumps(ob))
-
+    fp.write(dumps(ob, hex=hex, **kw))
