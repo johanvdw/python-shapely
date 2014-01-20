@@ -7,6 +7,7 @@ python-shapely (1.3.0-1) unstable; urgency=low
   * Require python >= 2.6.
   * Switched to pbuild, added support for python 3.
   * Updated watch file: look for releases on github (they contain .pyx files).
+  * Updated Homepage field.
   * Updated policy version.
 
  -- Pietro Battiston <me@pietrobattiston.it>  Mon, 20 Jan 2014 11:04:52 +0100
