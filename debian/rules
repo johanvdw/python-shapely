@@ -7,6 +7,13 @@
 %:
 	dh  $@ --with python2
 
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -f VERSION.txt
+	rm -f shapely/speedups/_speedups.c
+	rm -f shapely/speedups/_speedups.so
+	rm -f Shapely.egg-info/*
+
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	set -e; for ver in `pyversions -vr`; do \
@@ -15,5 +22,5 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 endif
 
 override_dh_auto_build:
-	rm shapely/speedups/_speedups.c
+	rm -f shapely/speedups/_speedups.c
 	dh_auto_build
