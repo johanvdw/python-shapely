@@ -1,8 +1,10 @@
-python-shapely (1.3.0-1) unstable; urgency=medium
+python-shapely (1.3.0-1) unstable; urgency=low
 
-  * Imported Upstream version 1.3.0
-  * Deleted obsolete patches
-  * Updated watch file: look for releases on github (they contain .pyx files)
+  * Imported Upstream version 1.3.0 (Closes: #731566)
+    - Works with libgeos >= 3.4.2 (Closes: #733667)
+  * Deleted obsolete patches.
+  * Updated watch file: look for releases on github (they contain .pyx files).
+  * Updated policy version.
 
  -- Pietro Battiston <me@pietrobattiston.it>  Mon, 20 Jan 2014 11:04:52 +0100
 
