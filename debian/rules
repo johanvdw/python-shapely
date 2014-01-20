@@ -4,8 +4,10 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export PYBUILD_NAME=shapely
+
 %:
-	dh  $@ --with python2
+	dh $@ --with python2,python3 --buildsystem=pybuild
 
 override_dh_auto_clean:
 	dh_auto_clean

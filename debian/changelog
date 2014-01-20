@@ -4,6 +4,7 @@ python-shapely (1.3.0-1) unstable; urgency=low
     - Works with libgeos >= 3.4.2 (Closes: #733667, #735808)
     - Removed non-deterministic test "cascaded_union.txt" (Closes: #666655)
   * Deleted obsolete patches.
+  * Switched to pbuild, added support for python 3.
   * Updated watch file: look for releases on github (they contain .pyx files).
   * Updated policy version.
 
