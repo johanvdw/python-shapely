@@ -15,7 +15,7 @@ Architecture: any
 Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends}, python (>=2.6) | python-ctypes, libgeos-c1 (>= 3.1.0)
 Suggests: python-numpy, python-matplotlib
 Enhances: python-numpy
-Description: geometric objects, predicates, and operations
+Description: geometric objects, predicates, and operations (Python 2)
  Shapely is a package for manipulation and analysis of 2D features.
  Its capabilities include:
   * calculating the point set unions, intersections, or differences of features
@@ -31,7 +31,7 @@ Architecture: any
 Depends: ${python3:Depends}, ${misc:Depends}, ${shlibs:Depends}, python3, libgeos-c1 (>= 3.1.0)
 Suggests: python3-numpy, python3-matplotlib
 Enhances: python3-numpy
-Description: geometric objects, predicates, and operations
+Description: geometric objects, predicates, and operations (Python 3)
  Shapely is a package for manipulation and analysis of 2D features.
  Its capabilities include:
   * calculating the point set unions, intersections, or differences of features
