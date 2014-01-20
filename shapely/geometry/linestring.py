@@ -1,11 +1,16 @@
 """Line strings and related utilities
 """
 
-from ctypes import c_double, cast, POINTER
-from ctypes import ArgumentError
+import sys
 
+if sys.version_info[0] < 3:
+    range = xrange
+
+from ctypes import c_double, cast, POINTER
+
+from shapely.coords import required
 from shapely.geos import lgeos, TopologicalError
-from shapely.geometry.base import BaseGeometry, geom_factory
+from shapely.geometry.base import BaseGeometry, geom_factory, JOIN_STYLE
 from shapely.geometry.proxy import CachingGeometryProxy
 
 __all__ = ['LineString', 'asLineString']
@@ -14,7 +19,7 @@ __all__ = ['LineString', 'asLineString']
 class LineString(BaseGeometry):
     """
     A one-dimensional figure comprising one or more line segments
-    
+
     A LineString has non-zero length and zero area. It may approximate a curve
     and need not be straight. Unlike a LinearRing, a LineString is not closed.
     """
@@ -25,8 +30,8 @@ class LineString(BaseGeometry):
         ----------
         coordinates : sequence
             A sequence of (x, y [,z]) numeric coordinate pairs or triples or
-            an object that provides the numpy array interface, including another
-            instance of LineString.
+            an object that provides the numpy array interface, including
+            another instance of LineString.
 
         Example
         -------
@@ -56,7 +61,7 @@ class LineString(BaseGeometry):
     def array_interface(self):
         """Provide the Numpy array protocol."""
         return self.coords.array_interface()
-    
+
     __array_interface__ = property(array_interface)
 
     # Coordinate access
@@ -69,9 +74,9 @@ class LineString(BaseGeometry):
     @property
     def xy(self):
         """Separate arrays of X and Y coordinate values
-        
+
         Example:
-        
+
           >>> x, y = LineString(((0, 0), (1, 1))).xy
           >>> list(x)
           [0.0, 1.0]
@@ -79,22 +84,23 @@ class LineString(BaseGeometry):
           [0.0, 1.0]
         """
         return self.coords.xy
-    
+
     def parallel_offset(
-        self, distance, side, 
-        resolution=16, join_style=1, mitre_limit=1.0):
-        
+            self, distance, side,
+            resolution=16, join_style=JOIN_STYLE.round, mitre_limit=1.0):
+
         """Returns a LineString or MultiLineString geometry at a distance from
         the object on its right or its left side.
-        
+
         Distance must be a positive float value. The side parameter may be
         'left' or 'right'. The resolution of the buffer around each vertex of
         the object increases by increasing the resolution keyword parameter or
         third positional parameter.
-        
+
         The join style is for outside corners between line segments. Accepted
-        values are 1 => ROUND, 2 => MITRE, 3 => BEVEL.
-        
+        values are JOIN_STYLE.round (1), JOIN_STYLE.mitre (2), and
+        JOIN_STYLE.bevel (3).
+
         The mitre ratio limit is used for very sharp corners. It is the ratio
         of the distance from the corner to the end of the mitred offset corner.
         When two line segments meet at a sharp angle, a miter join will extend
@@ -104,11 +110,11 @@ class LineString(BaseGeometry):
 
         try:
             return geom_factory(self.impl['parallel_offset'](
-                self, distance, resolution, join_style, mitre_limit, 
-                bool(side=='left')))
+                self, distance, resolution, join_style, mitre_limit,
+                bool(side == 'left')))
         except WindowsError:
             raise TopologicalError()
-        
+
 
 class LineStringAdapter(CachingGeometryProxy, LineString):
 
@@ -151,6 +157,9 @@ def asLineString(context):
 
 
 def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
+    # If numpy is present, we use numpy.require to ensure that we have a
+    # C-continguous array that owns its data. View data will be copied.
+    ob = required(ob)
     try:
         # From array protocol
         array = ob.__array_interface__
@@ -178,13 +187,13 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
             cs = lgeos.GEOSGeom_getCoordSeq(update_geom)
             if n != update_ndim:
                 raise ValueError(
-                "Wrong coordinate dimensions; this geometry has dimensions: %d" \
-                % update_ndim)
+                    "Wrong coordinate dimensions; this geometry has "
+                    "dimensions: %d" % update_ndim)
         else:
             cs = lgeos.GEOSCoordSeq_create(m, n)
 
         # add to coordinate sequence
-        for i in xrange(m):
+        for i in range(m):
             dx = c_double(cp[n*i])
             dy = c_double(cp[n*i+1])
             dz = None
@@ -194,7 +203,7 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
                 except IndexError:
                     raise ValueError("Inconsistent coordinate dimensionality")
 
-            # Because of a bug in the GEOS C API, 
+            # Because of a bug in the GEOS C API,
             # always set X before Y
             lgeos.GEOSCoordSeq_setX(cs, i, dx)
             lgeos.GEOSCoordSeq_setY(cs, i, dy)
@@ -203,7 +212,12 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
 
     except AttributeError:
         # Fall back on list
-        m = len(ob)
+        try:
+            m = len(ob)
+        except TypeError:  # Iterators, e.g. Python 3 zip
+            ob = list(ob)
+            m = len(ob)
+
         if m < 2:
             raise ValueError(
                 "LineStrings must have at least 2 coordinate tuples")
@@ -219,15 +233,15 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
             cs = lgeos.GEOSGeom_getCoordSeq(update_geom)
             if n != update_ndim:
                 raise ValueError(
-                "Wrong coordinate dimensions; this geometry has dimensions: %d" \
-                % update_ndim)
+                    "Wrong coordinate dimensions; this geometry has "
+                    "dimensions: %d" % update_ndim)
         else:
             cs = lgeos.GEOSCoordSeq_create(m, n)
-        
+
         # add to coordinate sequence
-        for i in xrange(m):
+        for i in range(m):
             coords = ob[i]
-            # Because of a bug in the GEOS C API, 
+            # Because of a bug in the GEOS C API,
             # always set X before Y
             lgeos.GEOSCoordSeq_setX(cs, i, coords[0])
             lgeos.GEOSCoordSeq_setY(cs, i, coords[1])
@@ -236,14 +250,16 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
                     lgeos.GEOSCoordSeq_setZ(cs, i, coords[2])
                 except IndexError:
                     raise ValueError("Inconsistent coordinate dimensionality")
-    
+
     if update_geom is not None:
         return None
     else:
         return lgeos.GEOSGeom_createLineString(cs), n
 
+
 def update_linestring_from_py(geom, ob):
     geos_linestring_from_py(ob, geom._geom, geom._ndim)
+
 
 # Test runner
 def _test():
