@@ -1,4 +1,3 @@
-# Compulsory line, this is a version 3 file
 version=3
-opts=uversionmangle=s/(a|b|rc)/~$1/ \
-http://pypi.python.org/packages/source/S/Shapely/ Shapely-(.*)\.tar\.gz
+opts=filenamemangle=s/.+\/v?(\d\S*)\.tar\.gz/Shapely-$1\.tar\.gz/ \
+  https://github.com/Toblerity/Shapely/releases .*/v?(\d\S*)\.tar\.gz
