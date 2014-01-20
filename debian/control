@@ -3,7 +3,7 @@ Section: python
 Priority: optional
 Maintainer: Pietro Battiston <me@pietrobattiston.it>
 Build-Depends: debhelper (>= 7.0.50), python-setuptools (>= 0.6), libgeos-c1 (>= 3.1.0), libgeos-dev, python-numpy, python (>= 2.6.6-3), python-all-dev, cython
-Standards-Version: 3.9.3
+Standards-Version: 3.9.5
 X-Python-Version: >= 2.5
 Homepage: http://trac.gispython.org/lab/wiki/Shapely
 Vcs-Browser: http://git.debian.org/?p=collab-maint/python-shapely.git
