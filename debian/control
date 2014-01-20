@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Pietro Battiston <me@pietrobattiston.it>
 Build-Depends: debhelper (>= 7.0.50), python-setuptools (>= 0.6), libgeos-c1 (>= 3.1.0), libgeos-dev, python-numpy, python-all (>= 2.6.6-3), python-all-dev, python3-all, python3-setuptools, cython, cython3, dh-python
 Standards-Version: 3.9.5
-X-Python-Version: >= 2.5
+X-Python-Version: >= 2.6
 X-Python3-Version: >= 3.2
 Homepage: http://trac.gispython.org/lab/wiki/Shapely
 Vcs-Browser: http://git.debian.org/?p=collab-maint/python-shapely.git
@@ -12,7 +12,7 @@ Vcs-Git: git://git.debian.org/git/collab-maint/python-shapely.git
 
 Package: python-shapely
 Architecture: any
-Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends}, python (>=2.5) | python-ctypes, libgeos-c1 (>= 3.1.0)
+Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends}, python (>=2.6) | python-ctypes, libgeos-c1 (>= 3.1.0)
 Suggests: python-numpy, python-matplotlib
 Enhances: python-numpy
 Description: geometric objects, predicates, and operations
