@@ -193,7 +193,7 @@ General Attributes and Methods
   Returns a string specifying the `Geometry Type` of the object in accordance
   with [1]_.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> print Point(0, 0).geom_type
   Point
@@ -202,7 +202,7 @@ General Attributes and Methods
 
   Returns the minimum distance (``float``) to the `other` geometric object.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0,0).distance(Point(1,1))
   1.4142135623730951
@@ -215,7 +215,7 @@ General Attributes and Methods
 .. note::
   This is not in general the same as the centroid.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> donut = Point(0, 0).buffer(2.0).difference(Point(0, 0).buffer(1.0))
   >>> donut.centroid.wkt
@@ -233,7 +233,7 @@ Points
   The `Point` constructor takes positional coordinate values or point tuple
   parameters.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import Point
   >>> point = Point(0.0, 0.0)
@@ -241,7 +241,7 @@ Points
 
 A `Point` has zero area and zero length.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> point.area
   0.0
@@ -250,14 +250,14 @@ A `Point` has zero area and zero length.
 
 Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> point.bounds
   (0.0, 0.0, 0.0, 0.0)
 
 Coordinate values are accessed via `coords`, `x`, `y`, and `z` properties.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> list(point.coords)
   [(0.0, 0.0)]
@@ -268,7 +268,7 @@ Coordinate values are accessed via `coords`, `x`, `y`, and `z` properties.
 
 Coordinates may also be sliced. `New in version 1.2.14`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> point.coords[:]
   [(0.0, 0.0)]
@@ -276,7 +276,7 @@ Coordinates may also be sliced. `New in version 1.2.14`.
 The `Point` constructor also accepts another `Point` instance, thereby making
 a copy.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(point)
   <shapely.geometry.point.Point object at 0x...>
@@ -304,7 +304,7 @@ that describe the lines are shown in grey.
 
 A `LineString` has zero area and non-zero length.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import LineString
   >>> line = LineString([(0, 0), (1, 1)])
@@ -315,14 +315,14 @@ A `LineString` has zero area and non-zero length.
 
 Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> line.bounds
   (0.0, 0.0, 1.0, 1.0)
 
 The defining coordinate values are accessed via the `coords` property.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> len(line.coords)
   2
@@ -331,7 +331,7 @@ The defining coordinate values are accessed via the `coords` property.
 
 Coordinates may also be sliced. `New in version 1.2.14`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> point.coords[:]
   [(0.0, 0.0), (1.0, 1.0)]
@@ -341,13 +341,19 @@ Coordinates may also be sliced. `New in version 1.2.14`.
 The constructor also accepts another `LineString` instance, thereby making a
 copy.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LineString(line)
   <shapely.geometry.linestring.LineString object at 0x...>
 
-A sequence of `Point` instances is not a valid constructor parameter. A
-`LineString` is described by points, but is not composed of `Point` instances.
+A `LineString` may also be constructed using a a sequence of mixed `Point`
+instances or coordinate tuples. The individual coordinates are copied into
+the new object.
+
+.. code-block:: pycon
+
+  >>> LineString([Point(0.0, 1.0), (2.0, 3.0), Point(4.0, 5.0)])
+  <shapely.geometry.linestring.LineString object at 0x...>
 
 .. _linearrings:
 
@@ -378,7 +384,7 @@ grey. A ring's boundary is `empty`.
 
 A `LinearRing` has zero area and non-zero length.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry.polygon import LinearRing
   >>> ring = LinearRing([(0, 0), (1, 1), (1, 0)])
@@ -389,14 +395,14 @@ A `LinearRing` has zero area and non-zero length.
 
 Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> ring.bounds
   (0.0, 0.0, 1.0, 1.0)
 
 Defining coordinate values are accessed via the `coords` property.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> len(ring.coords)
   4
@@ -406,7 +412,7 @@ Defining coordinate values are accessed via the `coords` property.
 The `LinearRing` constructor also accepts another `LineString` or `LinearRing`
 instance, thereby making a copy.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LinearRring(ring)
   <shapely.geometry.polygon.LinearRing object at 0x...>
@@ -446,7 +452,7 @@ interior rings touch along a line, and on the right, a `Polygon` that is
 
 A `Polygon` has non-zero area and non-zero length.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import Polygon
   >>> polygon = Polygon([(0, 0), (1, 1), (1, 0)])
@@ -457,14 +463,14 @@ A `Polygon` has non-zero area and non-zero length.
 
 Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> polygon.bounds
   (0.0, 0.0, 1.0, 1.0)
 
 Component rings are accessed via `exterior` and `interiors` properties.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> list(polygon.exterior.coords)
   [(0.0, 0.0), (1.0, 1.0), (1.0, 0.0), (0.0, 0.0)]
@@ -474,7 +480,7 @@ Component rings are accessed via `exterior` and `interiors` properties.
 The `Polygon` constructor also accepts instances of `LineString` and
 `LinearRing`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> coords = [(0, 0), (1, 1), (1, 0)]
   >>> r = LinearRing(coords)
@@ -497,7 +503,7 @@ the :func:`shapely.geometry.box()` function.
 
 For example:
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import box
   >>> b = box(0.0, 0.0, 1.0, 1.0)
@@ -530,7 +536,7 @@ point. To represent these kind of results, Shapely provides frozenset_-like,
 immutable collections of geometric objects.  The collections may be homogeneous
 (`MultiPoint` etc.) or heterogeneous.
 
-.. sourcecode:: python
+.. code-block:: python
 
   >>> a = LineString([(0, 0), (1, 1), (1,2), (2,2)])
   >>> b = LineString([(0, 0), (1, 1), (2,1), (2,2)])
@@ -552,7 +558,7 @@ single point; b) the intersection (in blue) is a collection containing one
 Members of a `GeometryCollection` are accessed via the `geoms` property or via
 the iterator protocol using ``in``  or ``list()``.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> pprint(list(x.geoms))
   [<shapely.geometry.point.Point object at 0x...>,
@@ -564,7 +570,7 @@ the iterator protocol using ``in``  or ``list()``.
 Homogeneous collections can also be sliced, resulting in a new object of the
 same type.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import MultiPoint
   >>> m = MultiPoint([(0, 0), (1, 1), (1,2), (2,2)])
@@ -594,7 +600,7 @@ Collections of Points
 
 A `MultiPoint` has zero area and zero length.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import MultiPoint
   >>> points = MultiPoint([(0.0, 0.0), (1.0, 1.0)])
@@ -605,7 +611,7 @@ A `MultiPoint` has zero area and zero length.
 
 Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> points.bounds
   (0.0, 0.0, 1.0, 1.0)
@@ -613,7 +619,7 @@ Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 Members of a multi-point collection are accessed via the ``geoms`` property or
 via the iterator protocol using ``in`` or :func:`list`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> import pprint
   >>> pprint.pprint(list(points.geoms))
@@ -626,7 +632,7 @@ via the iterator protocol using ``in`` or :func:`list`.
 The constructor also accepts another `MultiPoint` instance or an unordered
 sequence of `Point` instances, thereby making copies.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> MultiPoint([Point(0, 0), Point(1, 1)])
   <shapely.geometry.multipoint.MultiPoint object at 0x...>
@@ -649,7 +655,7 @@ shown in gray, the boundaries of the objects in black.
 
 A `MultiLineString` has zero area and non-zero length.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import MultiLineString
   >>> coords = [((0, 0), (1, 1)), ((-1, 0), (1, 0))]
@@ -661,7 +667,7 @@ A `MultiLineString` has zero area and non-zero length.
 
 Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> lines.bounds
   (-1.0, 0.0, 1.0, 1.0)
@@ -669,7 +675,7 @@ Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 Its members are instances of `LineString` and are accessed via the ``geoms``
 property or via the iterator protocol using ``in`` or ``list()``.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> len(lines.geoms)
   2
@@ -683,7 +689,7 @@ property or via the iterator protocol using ``in`` or ``list()``.
 The constructor also accepts another instance of `MultiLineString` or an
 unordered sequence of `LineString` instances, thereby making copies.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> MultiLineString(lines)
   <shapely.geometry.multilinestring.MultiLineString object at 0x...>
@@ -703,7 +709,7 @@ Collections of Polygons
 More clearly, the constructor also accepts an unordered sequence of `Polygon`
 instances, thereby making copies.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> polygons = MultiPolygon([polygon, s, t])
   >>> len(polygons.geoms)
@@ -711,13 +717,13 @@ instances, thereby making copies.
 
 .. plot:: code/multipolygon.py
 
-Figure 7. On the right, a `valid` `MultiPolygon` with 2 members, and on the
+Figure 7. On the left, a `valid` `MultiPolygon` with 2 members, and on the
 right, a `MultiPolygon` that is invalid because its members touch at an
 infinite number of points (along a line).
 
 Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> polygons.bounds
   (-1.0, -1.0, 2.0, 2.0)
@@ -725,7 +731,7 @@ Its `x-y` bounding box is a ``(minx, miny, maxx, maxy)`` tuple.
 Its members are instances of `Polygon` and are accessed via the ``geoms``
 property or via the iterator protocol using ``in`` or ``list()``.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> len(polygons.geoms)
   3
@@ -742,7 +748,7 @@ not ``None``, but like ``set([])``. Empty features can be created by calling
 the various constructors with no arguments. Almost no operations are supported
 by empty features.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> line = LineString()
   >>> line.is_empty
@@ -757,7 +763,7 @@ by empty features.
 The coordinates of a empty feature can be set, after which the geometry is no
 longer empty.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> line.coords = [(0, 0), (1, 1)]
   >>> line.is_empty
@@ -787,7 +793,7 @@ point at a given distance along the object.
 If the `normalized` arg is ``True``, the distance will be interpreted as a
 fraction of the geometric object's length.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> ip = LineString([(0, 0), (0, 1), (1, 1)]).interpolate(1.5)
   >>> ip
@@ -806,7 +812,7 @@ If the `normalized` arg is ``True``, return the distance normalized to the
 length of the object. The :meth:`project` method is the inverse of
 :meth:`interpolate`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LineString([(0, 0), (0, 1), (1, 1)]).project(ip)
   1.5
@@ -816,7 +822,7 @@ length of the object. The :meth:`project` method is the inverse of
 For example, the linear referencing methods might be used to cut lines at a
 specified distance.
 
-.. sourcecode:: python
+.. code-block:: python
 
   def cut(line, distance):
       # Cuts a line in two at a distance from its starting point
@@ -835,7 +841,7 @@ specified distance.
                   LineString(coords[:i] + [(cp.x, cp.y)]),
                   LineString([(cp.x, cp.y)] + coords[i:])]
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> line = LineString([(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)])
   >>> pprint([list(x.coords) for x in cut(line, 1.0)])
@@ -867,7 +873,7 @@ example will be shown for each.
   Returns ``True`` if the feature has not only `x` and `y`, but also `z`
   coordinates for 3D (or so-called, 2.5D) geometries.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0, 0).has_z
   False
@@ -882,14 +888,14 @@ example will be shown for each.
 
   `New in version 1.2.10`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LinearRing([(1,0), (1,1), (0,0)]).is_ccw
   True
 
 A ring with an undesired orientation can be reversed like this:
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> ring = LinearRing([(0,0), (1,1), (1,0)])
   >>> ring.is_ccw
@@ -903,7 +909,7 @@ A ring with an undesired orientation can be reversed like this:
   Returns ``True`` if the feature's `interior` and `boundary` (in point set
   terms) coincide with the empty set.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point().is_empty
   True
@@ -916,7 +922,7 @@ A ring with an undesired orientation can be reversed like this:
    unary predicates such as ``is_empty`` can be easily used as predicates for
    the built in :func:`filter` or :func:`itertools.ifilter`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from operator import attrgetter
   >>> empties = filter(attrgetter('is_empty'), [Point(), Point(0, 0)])
@@ -928,7 +934,7 @@ A ring with an undesired orientation can be reversed like this:
   Returns ``True`` if the feature is closed. A closed feature's `boundary`
   coincides with the empty set.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LineString([(0, 0), (1, 1), (1, -1)]).is_ring
   False
@@ -946,7 +952,7 @@ meaningless for others.
 
    The simplicity test is meaningful only for `LineStrings` and `LinearRings`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LineString([(0, 0), (1, 1), (1, -1), (0, 1)]).is_simple
   False
@@ -962,7 +968,7 @@ valid `Polygon` may not possess any overlapping exterior or interior rings. A
 valid `MultiPolygon` may not collect any overlapping polygons. Operations on
 invalid features may fail.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> MultiPolygon([Point(0, 0).buffer(2.0), Point(1, 1).buffer(2.0)]).is_valid
   False
@@ -976,7 +982,7 @@ buffer operations (explained in a following section) overlap.
   could ensure that only valid objects are returned from a constructor
   function.
 
-.. sourcecode:: python
+.. code-block:: python
 
   from functools import wraps
   def validate(func):
@@ -989,7 +995,7 @@ buffer operations (explained in a following section) overlap.
           return ob
       return wrapper
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> @validate
   ... def ring(coordinates):
@@ -1027,7 +1033,7 @@ See also :meth:`equals`.
 This predicate applies to all types, and is inverse to :meth:`within`. The
 expression ``a.contains(b) == b.within(a)`` always evaluates to ``True``.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> coords = [(0, 0), (1, 1)]
   >>> LineString(coords).contains(Point(0.5, 0.5))
@@ -1037,7 +1043,7 @@ expression ``a.contains(b) == b.within(a)`` always evaluates to ``True``.
 
 A line's endpoints are part of its `boundary` and are therefore not contained.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LineString(coords).contains(Point(1.0, 1.0))
   False
@@ -1047,7 +1053,7 @@ A line's endpoints are part of its `boundary` and are therefore not contained.
   Binary predicates can be used directly as predicates for ``filter()`` or
   ``itertools.ifilter()``.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> line = LineString(coords)
   >>> contained = filter(line.contains, [Point(), Point(0.5, 0.5)])
@@ -1062,14 +1068,14 @@ A line's endpoints are part of its `boundary` and are therefore not contained.
   the other but does not contain it, and the dimension of the intersection is
   less than the dimension of the one or the other.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LineString(coords).crosses(LineString([(0, 1), (1, 0)]))
   True
 
 A line does not cross a point that it contains.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LineString(coords).crosses(Point(0.5, 0.5))
   False
@@ -1079,7 +1085,7 @@ A line does not cross a point that it contains.
   Returns ``True`` if the `boundary` and `interior` of the object do not
   intersect at all with those of the other.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0, 0).disjoint(Point(1, 1))
   True
@@ -1096,7 +1102,7 @@ determine them, but are not the entirety of the sets. This is a potential
 "gotcha" for new users.  Equivalent lines, for example, can be constructed
 differently.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> a = LineString([(0, 0), (1, 1)])
   >>> b = LineString([(0, 0), (0.5, 0.5), (1, 1)])
@@ -1125,7 +1131,7 @@ This predicate is equivalent to the OR-ing of :meth:`contains`, :meth:`crosses`,
 Overlapping features do not therefore `touch`, another potential "gotcha". For
 example, the following lines touch at ``(1, 1)``, but do not overlap.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> a = LineString([(0, 0), (1, 1)])
   >>> b = LineString([(1, 1), (2, 2)])
@@ -1144,7 +1150,7 @@ objects. Let's say we have 4 stereotypic features: a point that is contained by
 a polygon which is itself contained by another polygon, and a free spirited
 point contained by none
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> a = Point(2, 2)
   >>> b = Polygon([[1, 1], [1, 3], [3, 3], [3, 1]])
@@ -1153,7 +1159,7 @@ point contained by none
 
 and that copies of these are collected into a list
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> features = [c, a, d, b, c]
 
@@ -1163,9 +1169,7 @@ function that operates on each list element and returns a value for comparison.
 Our key function will be a wrapper class that implements ``__lt__()`` using
 Shapely's binary :meth:`within` predicate.
 
-.. sourcecode:: python
-
-  from shapely.geometry import asShape
+.. code-block:: python
 
   class Within(object):
       def __init__(self, o):
@@ -1178,7 +1182,7 @@ sorting. That's what we'll rely on to spatially sort, and the reason why we use
 :meth:`within` in reverse instead of :meth:`contains`. Trying it out on features
 `d` and `c`, we see that it works.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> d < c
   True
@@ -1187,7 +1191,7 @@ sorting. That's what we'll rely on to spatially sort, and the reason why we use
 
 It also works on the list of features, producing the order we want.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> [d, c, c, b, a] == sorted(features, key=Within, reverse=True)
   True
@@ -1213,7 +1217,7 @@ object (the rest of the plane). The intersection of the `interior` of one with
 the `exterior` of the other is a ``0`` dimensional object (3rd and 7th elements
 of the matrix).
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0, 0).relate(Point(1, 1))
   'FF0FFF0F2'
@@ -1221,7 +1225,7 @@ of the matrix).
 The matrix for a line and a point on the line has more "true" (not ``F``)
 elements.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0, 0).relate(LineString([(0, 0), (1, 1)]))
   'F0FFFF102'
@@ -1254,7 +1258,7 @@ available as a read-only attribute.
 The boundary of a polygon is a line, the boundary of a line is a collection of
 points. The boundary of a point is an empty (null) collection.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >> coords = [((0, 0), (1, 1)), ((-1, 0), (1, 0))]
   >>> lines = MultiLineString(coords)
@@ -1277,7 +1281,7 @@ illustration of lines and their boundaries.
 
   Returns a representation of the object's geometric centroid (point).
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> LineString([(0, 0), (1, 1)]).centroid
   <shapely.geometry.point.Point object at 0x...>
@@ -1294,7 +1298,7 @@ illustration of lines and their boundaries.
   Returns a representation of the points making up this geometric object that
   do not make up the *other* object.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> a = Point(1, 1).buffer(1.5)
   >>> b = Point(2, 1).buffer(1.5)
@@ -1323,7 +1327,7 @@ Figure 8. Differences between two approximately circular polygons.
   Returns a representation of the intersection of this object with the `other`
   geometric object.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> a = Point(1, 1).buffer(1.5)
   >>> b = Point(2, 1).buffer(1.5)
@@ -1337,7 +1341,7 @@ See the figure under :meth:`symmetric_difference` below.
   Returns a representation of the points in this object not in the `other`
   geometric object, and the points in the `other` not in this geometric object.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> a = Point(1, 1).buffer(1.5)
   >>> b = Point(2, 1).buffer(1.5)
@@ -1355,7 +1359,7 @@ The type of object returned depends on the relationship between the operands.
 The union of polygons (for example) will be a polygon or a multi-polygon
 depending on whether they intersect or not.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> a = Point(1, 1).buffer(1.5)
   >>> b = Point(2, 1).buffer(1.5)
@@ -1366,7 +1370,7 @@ The semantics of these operations vary with type of geometric object.  For
 example, compare the boundary of the union of polygons to the union of their
 boundaries.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> a.union(b).boundary
   <shapely.geometry.polygon.LinearRing object at 0x...>
@@ -1387,7 +1391,7 @@ Constructive Methods
 Shapely geometric object have several methods that yield new objects not
 derived from set-theoretic analysis.
 
-.. method:: object.buffer(distance, resolution=16, cap_style=1, join_style=1, mitre_limit=1.0)
+.. method:: object.buffer(distance, resolution=16, cap_style=1, join_style=1, mitre_limit=5.0)
 
   Returns an approximate representation of all points within a given `distance`
   of the this geometric object.
@@ -1395,7 +1399,7 @@ derived from set-theoretic analysis.
   The styles of caps are specified by integer values: 1 (round), 2 (flat),
   3 (square). These values are also enumerated by the object
   :class:`shapely.geometry.CAP_STYLE` (see below).
-  
+
   The styles of joins between offset segments are specified by integer values:
   1 (round), 2 (mitre), and 3 (bevel). These values are also enumerated by the
   object :class:`shapely.geometry.JOIN_STYLE` (see below).
@@ -1420,7 +1424,7 @@ derived from set-theoretic analysis.
    bevel         3
    ========= =====
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import CAP_STYLE, JOIN_STYLE
   >>> CAP_STYLE.flat
@@ -1432,7 +1436,7 @@ A positive distance has an effect of dilation; a negative distance, erosion.
 The optional `resolution` argument determines the number of segments used to
 approximate a quarter circle around a point.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> line = LineString([(0, 0), (1, 1), (0, 2), (2, 2), (3, 1), (1, 0)])
   >>> dilated = line.buffer(0.5)
@@ -1446,7 +1450,7 @@ object is shown in blue.
 The default (`resolution` of 16) buffer of a point is a polygonal patch with
 99.8% of the area of the circular disk it approximates.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> p = Point(0, 0).buffer(10.0)
   >>> len(p.exterior.coords)
@@ -1456,7 +1460,7 @@ The default (`resolution` of 16) buffer of a point is a polygonal patch with
 
 With a `resolution` of 1, the buffer is a square patch.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> q = Point(0, 0).buffer(10.0, 1)
   >>> len(q.exterior.coords)
@@ -1467,7 +1471,7 @@ With a `resolution` of 1, the buffer is a square patch.
 Passed a `distance` of 0, :meth:`buffer` can be used to "clean" self-touching
 or self-crossing polygons such as the classic "bowtie".
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> coords = [(0, 0), (0, 2), (1, 1), (2, 2), (2, 0), (1, 1), (0, 0)]
   >>> bowtie = Polygon(coords)
@@ -1494,7 +1498,7 @@ Buffering splits the polygon in two at the point where they touch.
   three. For two points, the convex hull collapses to a `LineString`; for 1, a
   `Point`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0, 0).convex_hull
   <shapely.geometry.point.Point object at 0x...>
@@ -1512,14 +1516,14 @@ Figure 10. Convex hull (blue) of 2 points (left) and of 6 points (right).
   Returns a representation of the point or smallest rectangular polygon (with
   sides parallel to the coordinate axes) that contains the object.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0, 0).envelope
   <shapely.geometry.point.Point object at 0x...>
   >>> MultiPoint([(0, 0), (1, 1)]).envelope
   <shapely.geometry.polygon.Polygon object at 0x...>
 
-.. method:: object.parallel_offset(distance, side, resolution=16, join_style=1, mitre_limit=1.0)
+.. method:: object.parallel_offset(distance, side, resolution=16, join_style=1, mitre_limit=5.0)
 
   Returns a LineString or MultiLineString geometry at a distance from the
   object on its right or its left side.
@@ -1562,7 +1566,7 @@ the original geometry. By default a slower algorithm is used that preserves
 topology. If preserve topology is set to ``False`` the much quicker
 Douglas-Peucker algorithm [6]_ is used.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> p = Point(0.0, 0.0)
   >>> x = p.buffer(1.0)
@@ -1677,7 +1681,7 @@ preserved or supported by 3D affine transformations.
     x_\mathrm{off} &= x_0 - x_0 \cos{\theta} + y_0 \sin{\theta} \\
     y_\mathrm{off} &= y_0 - x_0 \sin{\theta} - y_0 \cos{\theta}
 
-  .. sourcecode:: pycon
+  .. code-block:: pycon
 
     >>> from shapely import affinity
     >>> line = LineString([(1, 3), (1, 1), (4, 1)])
@@ -1716,7 +1720,7 @@ preserved or supported by 3D affine transformations.
     y_\mathrm{off} &= y_0 - y_0 y_\mathrm{fact} \\
     z_\mathrm{off} &= z_0 - z_0 z_\mathrm{fact}
 
-  .. sourcecode:: pycon
+  .. code-block:: pycon
 
     >>> triangle = Polygon([(1, 1), (2, 3), (3, 1)])
     >>> triangle_a = affinity.scale(triangle, xfact=1.5, yfact=-1)
@@ -1799,7 +1803,7 @@ Shapely supports map projections and other arbitrary transformations of geometri
 For example, here is an identity function applicable to both types of input
 (scalar or array).
 
-.. sourcecode:: python
+.. code-block:: python
 
     def id_func(x, y, z=None):
         return tuple(filter(None, [x, y, z]))
@@ -1809,21 +1813,22 @@ For example, here is an identity function applicable to both types of input
 A partially applied transform function from pyproj satisfies the requirements
 for `func`.
 
-.. sourcecode:: python
+.. code-block:: python
 
+    from shapely.ops import transform
     from functools import partial
     import pyproj
 
     project = partial(
         pyproj.transform,
-        pyproj.Proj(init='espg:4326'),
+        pyproj.Proj(init='epsg:4326'),
         pyproj.Proj(init='epsg:26913'))
 
     g2 = transform(project, g1)
 
 Lambda expressions such as the one in
 
-.. sourcecode:: python
+.. code-block:: python
 
     g2 = transform(lambda x, y, z=None: (x+1.0, y+1.0), g1)
 
@@ -1846,7 +1851,7 @@ using functions in the :mod:`shapely.ops` module.
   As with the :class:`MultiLineString` constructor, the input elements may be
   any line-like object.
 
-  .. sourcecode:: pycon
+  .. code-block:: pycon
 
     >>> from shapely.ops import polygonize
     >>> lines = [
@@ -1878,7 +1883,7 @@ using functions in the :mod:`shapely.ops` module.
 
   `New in version 1.2.18.`
 
-  .. sourcecode:: pycon
+  .. code-block:: pycon
 
     >>> lines = [
     ...     ((0, 0), (1, 1)),
@@ -1905,7 +1910,7 @@ using functions in the :mod:`shapely.ops` module.
   As with :func:`shapely.ops.polygonize`, the input elements may be any
   line-like object.
 
-.. sourcecode:: python
+.. code-block:: python
 
     >>> from shapely.ops import linemerge
     >>> linemerge(lines)
@@ -1927,7 +1932,7 @@ efficient than accumulating with :meth:`union`.
 
   Returns a representation of the union of the given geometric objects.
 
-  .. sourcecode:: pycon
+  .. code-block:: pycon
 
     >>> from shapely.ops import cascaded_union
     >>> polygons = [Point(i, 0).buffer(0.7) for i in range(5)]
@@ -1936,7 +1941,7 @@ efficient than accumulating with :meth:`union`.
 
   The function is particularly useful in dissolving `MultiPolygons`.
 
-  .. sourcecode:: pycon
+  .. code-block:: pycon
 
     >>> m = MultiPolygon(polygons)
     >>> m.area
@@ -1955,6 +1960,65 @@ efficient than accumulating with :meth:`union`.
 
   Returns a representation of the union of the given geometric objects.
 
+Delaunay triangulation
+----------------------
+
+The :func:`~shapely.ops.triangulate` function in `shapely.ops` calculates a
+Delaunay triangulation from a collection of points.
+
+.. plot:: code/triangulate.py
+
+.. function:: shapely.ops.triangulate(geom, tolerance=0.0, edges=False)
+
+   Returns a Delaunary triangulation of the vertices of the input geometry.
+
+   The source may be any geometry type. All vertices of the geometry will be
+   used as the points of the triangulation.
+
+   The `tolerance` keyword argument sets the snapping tolerance used to improve
+   the robustness of the triangulation computation. A tolerance of 0.0 specifies
+   that no snapping will take place.
+
+   If the `edges` keyword argument is `False` a list of `Polygon` triangles
+   will be returned. Otherwise a list of `LineString` edges is returned.
+
+   `New in version  1.4.0`
+
+.. code-block:: pycon
+
+  >>> from shapely.ops import triangulate
+  >>> points = MultiPoint([(0, 0), (1, 1), (0, 2), (2, 2), (3, 1), (1, 0)])
+  >>> triangles = triangulate(points)
+  >>> pprint([triangle.wkt for triangle in triangles])
+  ['POLYGON ((0 2, 0 0, 1 1, 0 2))',
+   'POLYGON ((0 2, 1 1, 2 2, 0 2))',
+   'POLYGON ((2 2, 1 1, 3 1, 2 2))',
+   'POLYGON ((3 1, 1 1, 1 0, 3 1))',
+   'POLYGON ((1 0, 1 1, 0 0, 1 0))']
+
+Nearest points
+--------------
+
+The :func:`~shapely.ops.nearest_points` function in `shapely.ops` calculates
+the nearest points in a pair of geometries.
+
+.. function:: shapely.ops.nearest_points(geom1, geom2)
+
+   Returns a tuple of the nearest points in the input geometries. The points are
+   returned in the same order as the input geometries.
+
+   `New in version 1.4.0`.
+
+.. code-block:: pycon
+
+  >>> from shapely.ops import nearest_points
+  >>> triangle = Polygon([(0, 0), (1, 0), (0.5, 1), (0, 0)])
+  >>> square = Polygon([(0, 2), (1, 2), (1, 3), (0, 3), (0, 2)])
+  >>> [o.wkt for o in nearest_points(triangle, square)]
+  ['POINT (0.5 1)', 'POINT (0.5 2)']
+
+Note that the nearest points may not be existing vertices in the geometries.
+
 Prepared Geometry Operations
 ----------------------------
 
@@ -1968,7 +2032,7 @@ batches of operations.
 To test one polygon containment against a large batch of points, one should
 first use the :func:`prepared.prep` function.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import Point
   >>> from shapely.prepared import prep
@@ -1996,7 +2060,7 @@ Diagnostics
 The messages may or may not have a representation of a problem point that can
 be parsed out.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> coords = [(0, 0), (0, 2), (1, 1), (2, 2), (2, 0), (1, 1), (0, 0)]
   >>> p = Polygon(coords)
@@ -2009,7 +2073,7 @@ accessible via :attr:`shapely.__version__`,
 :attr:`shapely.geos.geos_version_string`, and
 :attr:`shapely.geos.geos_capi_version`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> import shapely
   >>> shapely.__version__
@@ -2019,6 +2083,37 @@ accessible via :attr:`shapely.__version__`,
   (3, 3, 0)
   >>> shapely.geos.geos_version_string
   '3.3.0-CAPI-1.7.0'
+
+
+STR-packed R-tree
+=================
+
+Shapely provides an interface to the query-only GEOS R-tree packed using the
+Sort-Tile-Recursive algorithm. Pass a list of geometry objects to the STRtree
+constructor to create an R-tree that you can query with another geometric object.
+
+.. class:: strtree.STRtree(geometries)
+
+  The `STRtree` constructor takes a sequence of geometric objects.
+
+  These are copied and stored in the R-tree.
+
+  `New in version 1.4.0`.
+
+Query-only means in this case that the R-tree, once created, is immutable. You
+cannot add or remove geometries.
+
+.. code-block:: pycon
+
+  >>> from shapely.geometry import Point
+  >>> from shapely.strtree import STRtree
+  >>> points = [Point(i, i) for i in range(10)]
+  >>> tree = STRtree(points)
+  >>> tree.query(Point(2,2).buffer(0.99))
+  >>> [o.wkt for o in tree.query(Point(2,2).buffer(0.99))]
+  ['POINT (2 2)']
+  >>> [o.wkt for o in tree.query(Point(2,2).buffer(1.0))]
+  ['POINT (1 1)', 'POINT (2 2)', 'POINT (3 3)']
 
 
 Interoperation
@@ -2034,7 +2129,7 @@ any geometric object can be had via its :attr:`wkt` or :attr:`wkb` attribute.
 These representations allow interchange with many GIS programs. PostGIS, for
 example, trades in hex-encoded WKB.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0, 0).wkt
   'POINT (0.0000000000000000 0.0000000000000000)'
@@ -2055,7 +2150,7 @@ appropriate type, use ``loads()``.
 
   Returns a geometric object from a WKB representation `wkb`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >> from shapely.wkb import dumps, loads
   >>> wkb = dumps(Point(0, 0))
@@ -2074,7 +2169,7 @@ All of Shapely's geometry types are supported by these functions.
 
   Returns a geometric object from a WKT representation `wkt`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >> wkt = dumps(Point(0, 0))
   >>> print wkt
@@ -2089,7 +2184,7 @@ All geometric objects with coordinate sequences (`Point`, `LinearRing`,
 `LineString`) provide the Numpy array interface and can thereby be converted or
 adapted to Numpy arrays.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from numpy import array
   >>> array(Point(0, 0))
@@ -2108,7 +2203,7 @@ price of slower Numpy access to the coordinates of Shapely objects.
 The coordinates of the same types of geometric objects can be had as standard
 Python arrays of `x` and `y` values via the :attr:`xy` attribute.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> Point(0, 0).xy
   (array('d', [0.0]), array('d', [0.0]))
@@ -2119,7 +2214,7 @@ The :func:`shapely.geometry.asShape` family of functions can be used to wrap
 Numpy coordinate arrays so that they can then be analyzed using Shapely while
 maintaining their original storage. A 1 x 2 array can be adapted to a point
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import asPoint
   >>> pa = asPoint(array([0.0, 0.0]))
@@ -2128,7 +2223,7 @@ maintaining their original storage. A 1 x 2 array can be adapted to a point
 
 and a N x 2 array can be adapted to a line string
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import asLineString
   >>> la = asLineString(array([[1.0, 2.0], [3.0, 4.0]]))
@@ -2156,28 +2251,28 @@ adapted and used as a Shapely geometry using the
 
 For example, a dictionary:
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
-  >>> from shapely.geometry import asShape
-  >>> d = {"type": "Point", "coordinates": (0.0, 0.0)}
-  >>> shape = asShape(d)
-  >>> shape.geom_type
+  >>> from shapely.geometry import shape
+  >>> data = {"type": "Point", "coordinates": (0.0, 0.0)}
+  >>> geom = shape(data)
+  >>> geom.geom_type
   'Point'
-  >>> list(shape.coords)
+  >>> list(geom.coords)
   [(0.0, 0.0)]
 
 Or a simple placemark-type object:
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> class GeoThing(object):
   ...     def __init__(self, d):
   ...         self.__geo_interface__ = d
   >>> thing = GeoThing({"type": "Point", "coordinates": (0.0, 0.0)})
-  >>> shape = asShape(thing)
-  >>> shape.geom_type
+  >>> geom = shape(thing)
+  >>> geom.geom_type
   'Point'
-  >>> list(shape.coords)
+  >>> list(geom.coords)
   [(0.0, 0.0)]
 
 The GeoJSON-like mapping of a geometric object can be obtained using
@@ -2192,7 +2287,7 @@ The GeoJSON-like mapping of a geometric object can be obtained using
 
   For example, using the same `GeoThing` class:
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely.geometry import mapping
   >>> thing = GeoThing({"type": "Point", "coordinates": (0.0, 0.0)})
@@ -2222,7 +2317,7 @@ attribute. The constructor speedups are disabled by default. To enable the
 speedups call :func:`enable`. You can revert to the default implementation with
 :func:`disable`.
 
-.. sourcecode:: pycon
+.. code-block:: pycon
 
   >>> from shapely import speedups
   >>> speedups.available

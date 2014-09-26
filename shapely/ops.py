@@ -8,14 +8,14 @@ if sys.version_info[0] < 3:
 else:
     izip = zip
 
-from ctypes import byref, c_void_p
+from ctypes import byref, c_void_p, c_double
 
 from shapely.geos import lgeos
 from shapely.geometry.base import geom_factory, BaseGeometry
-from shapely.geometry import asShape, asLineString, asMultiLineString
+from shapely.geometry import asShape, asLineString, asMultiLineString, Point
 
 __all__ = ['cascaded_union', 'linemerge', 'operator', 'polygonize',
-           'polygonize_full', 'transform', 'unary_union']
+           'polygonize_full', 'transform', 'unary_union', 'triangulate']
 
 
 class CollectionOperator(object):
@@ -36,7 +36,12 @@ class CollectionOperator(object):
         or a sequence of objects than can be adapted to LineStrings.
         """
         source = getattr(lines, 'geoms', None) or lines
-        obs = [self.shapeup(l) for l in source]
+        try:
+            source = iter(source)
+        except TypeError:
+            source = [source]
+        finally:
+            obs = [self.shapeup(l) for l in source]
         geom_array_type = c_void_p * len(obs)
         geom_array = geom_array_type()
         for i, line in enumerate(obs):
@@ -65,8 +70,12 @@ class CollectionOperator(object):
         (bowties, etc).
         """
         source = getattr(lines, 'geoms', None) or lines
-        obs = [self.shapeup(l) for l in source]
-
+        try:
+            source = iter(source)
+        except TypeError:
+            source = [source]
+        finally:
+            obs = [self.shapeup(l) for l in source]
         L = len(obs)
         subs = (c_void_p * L)()
         for i, g in enumerate(obs):
@@ -109,7 +118,11 @@ class CollectionOperator(object):
 
         This is the most efficient method of dissolving many polygons.
         """
-        L = len(geoms)
+        try:
+            L = len(geoms)
+        except TypeError:
+            geoms = [geoms]
+            L = 1
         subs = (c_void_p * L)()
         for i, g in enumerate(geoms):
             subs[i] = g._geom
@@ -123,7 +136,11 @@ class CollectionOperator(object):
         prefered method for dissolving many polygons.
 
         """
-        L = len(geoms)
+        try:
+            L = len(geoms)
+        except TypeError:
+            geoms = [geoms]
+            L = 1
         subs = (c_void_p * L)()
         for i, g in enumerate(geoms):
             subs[i] = g._geom
@@ -137,6 +154,25 @@ linemerge = operator.linemerge
 cascaded_union = operator.cascaded_union
 unary_union = operator.unary_union
 
+
+def triangulate(geom, tolerance=0.0, edges=False):
+    """Creates the Delaunay triangulation and returns a list of geometries
+
+    The source may be any geometry type. All vertices of the geometry will be
+    used as the points of the triangulation.
+
+    From the GEOS documentation:
+    tolerance is the snapping tolerance used to improve the robustness of
+    the triangulation computation. A tolerance of 0.0 specifies that no
+    snapping will take place.
+
+    If edges is False, a list of Polygons (triangles) will be returned.
+    Otherwise the list of LineString edges is returned.
+
+    """
+    func = lgeos.methods['delaunay_triangulation']
+    gc = geom_factory(func(geom._geom, tolerance, int(edges)))
+    return [g for g in gc.geoms]
 
 class ValidateOp(object):
     def __call__(self, this):
@@ -170,7 +206,7 @@ def transform(func, geom):
 
       project = partial(
           pyproj.transform,
-          pyproj.Proj(init='espg:4326'),
+          pyproj.Proj(init='epsg:4326'),
           pyproj.Proj(init='epsg:26913'))
 
       g2 = transform(project, g1)
@@ -183,14 +219,14 @@ def transform(func, geom):
     """
     if geom.is_empty:
         return geom
-    if geom.type in ('Point', 'LineString', 'Polygon'):
+    if geom.type in ('Point', 'LineString', 'LinearRing', 'Polygon'):
 
         # First we try to apply func to x, y, z sequences. When func is
         # optimized for sequences, this is the fastest, though zipping
         # the results up to go back into the geometry constructors adds
         # extra cost.
         try:
-            if geom.type in ('Point', 'LineString'):
+            if geom.type in ('Point', 'LineString', 'LinearRing'):
                 return type(geom)(zip(*func(*izip(*geom.coords))))
             elif geom.type == 'Polygon':
                 shell = type(geom.exterior)(
@@ -202,7 +238,7 @@ def transform(func, geom):
         # A func that assumes x, y, z are single values will likely raise a
         # TypeError, in which case we'll try again.
         except TypeError:
-            if geom.type in ('Point', 'LineString'):
+            if geom.type in ('Point', 'LineString', 'LinearRing'):
                 return type(geom)([func(*c) for c in geom.coords])
             elif geom.type == 'Polygon':
                 shell = type(geom.exterior)(
@@ -215,3 +251,27 @@ def transform(func, geom):
         return type(geom)([transform(func, part) for part in geom.geoms])
     else:
         raise ValueError('Type %r not recognized' % geom.type)
+
+
+def nearest_points(g1, g2):
+    """Returns the calculated nearest points in the input geometries
+    
+    The points are returned in the same order as the input geometries.
+    """
+    seq = lgeos.methods['nearest_points'](g1._geom, g2._geom)
+    if seq is None:
+        if g1.is_empty:
+            raise ValueError('The first input geometry is empty')
+        else:
+            raise ValueError('The second input geometry is empty')
+    x1 = c_double()
+    y1 = c_double()
+    x2 = c_double()
+    y2 = c_double()
+    lgeos.GEOSCoordSeq_getX(seq, 0, byref(x1))
+    lgeos.GEOSCoordSeq_getY(seq, 0, byref(y1))
+    lgeos.GEOSCoordSeq_getX(seq, 1, byref(x2))
+    lgeos.GEOSCoordSeq_getY(seq, 1, byref(y2))
+    p1 = Point(x1.value, y1.value)
+    p2 = Point(x2.value, y2.value)
+    return (p1, p2)

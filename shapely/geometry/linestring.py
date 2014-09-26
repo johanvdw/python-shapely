@@ -10,8 +10,11 @@ from ctypes import c_double, cast, POINTER
 
 from shapely.coords import required
 from shapely.geos import lgeos, TopologicalError
-from shapely.geometry.base import BaseGeometry, geom_factory, JOIN_STYLE
+from shapely.geometry.base import (
+    BaseGeometry, geom_factory, JOIN_STYLE, geos_geom_from_py
+)
 from shapely.geometry.proxy import CachingGeometryProxy
+from shapely.geometry.point import Point
 
 __all__ = ['LineString', 'asLineString']
 
@@ -52,6 +55,24 @@ class LineString(BaseGeometry):
             'coordinates': tuple(self.coords)
             }
 
+    def svg(self, scale_factor=1.):
+        """
+        SVG representation of the geometry. Scale factor is multiplied by
+        the size of the SVG symbol so it can be scaled consistently for a
+        consistent appearance based on the canvas size.
+        """
+        pnt_format = " ".join(["{0},{1}".format(*c) for c in self.coords])
+        return """<polyline
+            fill="none"
+            stroke="{2}"
+            stroke-width={1}
+            points="{0}"
+            opacity=".8"
+            />""".format(
+                pnt_format,
+                2.*scale_factor, 
+                "#66cc99" if self.is_valid else "#ff3333")
+
     @property
     def ctypes(self):
         if not self._ctypes_data:
@@ -87,7 +108,7 @@ class LineString(BaseGeometry):
 
     def parallel_offset(
             self, distance, side,
-            resolution=16, join_style=JOIN_STYLE.round, mitre_limit=1.0):
+            resolution=16, join_style=JOIN_STYLE.round, mitre_limit=5.0):
 
         """Returns a LineString or MultiLineString geometry at a distance from
         the object on its right or its left side.
@@ -107,12 +128,14 @@ class LineString(BaseGeometry):
         far beyond the original geometry. To prevent unreasonable geometry, the
         mitre limit allows controlling the maximum length of the join corner.
         Corners with a ratio which exceed the limit will be beveled."""
-
+        if mitre_limit == 0.0:
+            raise ValueError(
+                'Cannot compute offset from zero-length line segment')
         try:
             return geom_factory(self.impl['parallel_offset'](
                 self, distance, resolution, join_style, mitre_limit,
                 bool(side == 'left')))
-        except WindowsError:
+        except OSError:
             raise TopologicalError()
 
 
@@ -157,6 +180,14 @@ def asLineString(context):
 
 
 def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
+    # If a LineString is passed in, clone it and return
+    # If a LinearRing is passed in, clone the coord seq and return a LineString
+    if isinstance(ob, LineString):
+        if type(ob) == LineString:
+            return geos_geom_from_py(ob)
+        else:
+            return geos_geom_from_py(ob, lgeos.GEOSGeom_createLineString)
+
     # If numpy is present, we use numpy.require to ensure that we have a
     # C-continguous array that owns its data. View data will be copied.
     ob = required(ob)
@@ -221,8 +252,15 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
         if m < 2:
             raise ValueError(
                 "LineStrings must have at least 2 coordinate tuples")
+
+        def _coords(o):
+            if isinstance(o, Point):
+                return o.coords[0]
+            else:
+                return o
+
         try:
-            n = len(ob[0])
+            n = len(_coords(ob[0]))
         except TypeError:
             raise ValueError(
                 "Input %s is the wrong shape for a LineString" % str(ob))
@@ -240,7 +278,7 @@ def geos_linestring_from_py(ob, update_geom=None, update_ndim=0):
 
         # add to coordinate sequence
         for i in range(m):
-            coords = ob[i]
+            coords = _coords(ob[i])
             # Because of a bug in the GEOS C API,
             # always set X before Y
             lgeos.GEOSCoordSeq_setX(cs, i, coords[0])

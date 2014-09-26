@@ -14,6 +14,7 @@ except ImportError:
 from distutils.cmd import Command
 from distutils.errors import CCompilerError, DistutilsExecError, \
     DistutilsPlatformError
+from distutils.sysconfig import get_config_var
 import errno
 import glob
 import os
@@ -22,40 +23,6 @@ import shutil
 import subprocess
 import sys
 
-class test(Command):
-    """Run unit tests after in-place build"""
-    description = __doc__
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        # Force an in-place build for testing speedups
-        cmd = self.reinitialize_command('build_ext')
-        setattr(cmd, 'inplace', 1)
-        self.run_command('build_ext')
-
-        if sys.version_info[0:2] <= (2, 6):
-            try:
-                from unittest2 import TextTestRunner, TestLoader
-            except ImportError:
-                raise ImportError(
-                    "unittest2 is required to run tests with python-%d.%d" %
-                    sys.version_info[0:2])
-        else:
-            from unittest import TextTestRunner, TestLoader
-
-        import shapely.tests
-        tests = TestLoader().loadTestsFromName('test_suite', shapely.tests)
-        runner = TextTestRunner(verbosity=2)
-        result = runner.run(tests)
-
-        if not result.wasSuccessful():
-            sys.exit(1)
 
 # Get the version from the shapely module
 version = None
@@ -67,17 +34,22 @@ with open('shapely/__init__.py', 'r') as fp:
 if version is None:
     raise ValueError("Could not determine Shapely's version")
 
-with open('VERSION.txt', 'w') as fp:
+# Handle UTF-8 encoding of certain text files.
+open_kwds = {}
+if sys.version_info > (3,):
+    open_kwds['encoding'] = 'utf-8'
+
+with open('VERSION.txt', 'w', **open_kwds) as fp:
     fp.write(version)
 
-with open('README.rst', 'r') as fp:
+with open('README.rst', 'r', **open_kwds) as fp:
     readme_text = fp.read()
 readme_text = readme_text.replace(".. include:: CREDITS.txt", "")
 
-with open('CREDITS.txt', 'r') as fp:
+with open('CREDITS.txt', 'r', **open_kwds) as fp:
     credits = fp.read()
 
-with open('CHANGES.txt', 'r') as fp:
+with open('CHANGES.txt', 'r', **open_kwds) as fp:
     changes_text = fp.read()
 
 setup_args = dict(
@@ -99,9 +71,9 @@ setup_args = dict(
         'shapely.algorithms',
         'shapely.examples',
         'shapely.speedups',
-        'shapely.tests',
+        'shapely.vectorized',
     ],
-    cmdclass            = {'test': test},
+    cmdclass = {},
     classifiers         = [
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
@@ -113,6 +85,7 @@ setup_args = dict(
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering :: GIS',
     ],
+    data_files         = [('shapely', ['shapely/_geos.pxi'])]
 )
 
 # Add DLLs for Windows
@@ -152,20 +125,23 @@ class BuildFailed(Exception):
     pass
 
 
-class build_ext(distutils_build_ext):
-    # This class allows C extension building to fail.
+def construct_build_ext(build_ext):
+    class WrappedBuildExt(build_ext):
+        # This class allows C extension building to fail.
 
-    def run(self):
-        try:
-            distutils_build_ext.run(self)
-        except DistutilsPlatformError as x:
-            raise BuildFailed(x)
+        def run(self):
+            try:
+                build_ext.run(self)
+            except DistutilsPlatformError as x:
+                raise BuildFailed(x)
 
-    def build_extension(self, ext):
-        try:
-            distutils_build_ext.build_extension(self, ext)
-        except ext_errors as x:
-            raise BuildFailed(x)
+        def build_extension(self, ext):
+            try:
+                build_ext.build_extension(self, ext)
+            except ext_errors as x:
+                raise BuildFailed(x)
+    return WrappedBuildExt
+
 
 if (hasattr(platform, 'python_implementation')
         and platform.python_implementation() == 'PyPy'):
@@ -176,6 +152,7 @@ elif sys.platform == 'win32':
     libraries = ['geos']
 else:
     libraries = ['geos_c']
+
 
 if os.path.exists("MANIFEST.in"):
     pyx_file = "shapely/speedups/_speedups.pyx"
@@ -202,12 +179,36 @@ ext_modules = [
     Extension(
         "shapely.speedups._speedups",
         ["shapely/speedups/_speedups.c"],
-        libraries=libraries)
+        libraries=libraries,
+        include_dirs=[get_config_var('INCLUDEDIR')],),
 ]
 
 try:
+    import numpy as np
+    from Cython.Distutils import build_ext as cython_build_ext
+    from distutils.extension import Extension as DistutilsExtension
+
+    cmd_classes = setup_args.setdefault('cmdclass', {})
+    if 'build_ext' in cmd_classes:
+        raise ValueError('We need to put the Cython build_ext in '
+                         'cmd_classes, but it is already defined.')
+    cmd_classes['build_ext'] = cython_build_ext
+
+    ext_modules.append(DistutilsExtension("shapely.vectorized._vectorized",
+                                 sources=["shapely/vectorized/_vectorized.pyx"],
+                                 libraries=libraries + [np.get_include()],
+                                 include_dirs=[get_config_var('INCLUDEDIR'),
+                                               np.get_include()],
+                                 ))
+except ImportError:
+    print("Numpy or Cython not available, shapely.vectorized submodule not "
+          "being built.")
+
+
+try:
     # try building with speedups
-    setup_args['cmdclass']['build_ext'] = build_ext
+    existing_build_ext = setup_args['cmdclass'].get('build_ext', distutils_build_ext)
+    setup_args['cmdclass']['build_ext'] = construct_build_ext(existing_build_ext)
     setup(
         ext_modules=ext_modules,
         **setup_args

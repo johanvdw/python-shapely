@@ -9,8 +9,8 @@ if sys.version_info[0] < 3:
 from ctypes import c_void_p, cast
 
 from shapely.geos import lgeos
-from shapely.geometry.base import BaseMultipartGeometry
-from shapely.geometry.polygon import Polygon, geos_polygon_from_py
+from shapely.geometry.base import BaseMultipartGeometry, geos_geom_from_py
+from shapely.geometry import polygon
 from shapely.geometry.proxy import CachingGeometryProxy
 
 __all__ = ['MultiPolygon', 'asMultiPolygon']
@@ -64,7 +64,7 @@ class MultiPolygon(BaseMultipartGeometry):
             self._geom, self._ndim = geos_multipolygon_from_py(polygons)
 
     def shape_factory(self, *args):
-        return Polygon(*args)
+        return polygon.Polygon(*args)
 
     @property
     def __geo_interface__(self):
@@ -80,11 +80,35 @@ class MultiPolygon(BaseMultipartGeometry):
             'coordinates': allcoords
             }
 
+    def svg(self, scale_factor=1.):
+        """
+        SVG representation of the geometry. Scale factor is multiplied by
+        the size of the SVG symbol so it can be scaled consistently for a
+        consistent appearance based on the canvas size.
+        """
+        parts = []
+        for part in self.geoms:
+            exterior_coords = [["{0},{1}".format(*c) for c in part.exterior.coords]]
+            interior_coords = [
+                ["{0},{1}".format(*c) for c in interior.coords]
+                for interior in part.interiors ]
+            path = " ".join([
+                "M {0} L {1} z".format(coords[0], " L ".join(coords[1:]))
+                for coords in exterior_coords + interior_coords ])
+            parts.append(
+                """<g fill-rule="evenodd" fill="{2}" stroke="#555555"
+                stroke-width="{0}" opacity="0.6">
+                <path d="{1}" /></g>""".format(
+                    2. * scale_factor,
+                    path,
+                    "#66cc99" if self.is_valid else "#ff3333"))
+        return "\n".join(parts)
+
 
 class MultiPolygonAdapter(CachingGeometryProxy, MultiPolygon):
     
     context = None
-    _owned = False
+    _other_owned = False
 
     def __init__(self, context, context_type='polygons'):
         self.context = context
@@ -121,13 +145,21 @@ def geos_multipolygon_from_py(ob):
 
     subs = (c_void_p * L)()
     for l in range(L):
-        geom, ndims = geos_polygon_from_py(ob[l][0], ob[l][1:])
+        geom, ndims = polygon.geos_polygon_from_py(ob[l][0], ob[l][1:])
         subs[l] = cast(geom, c_void_p)
             
     return (lgeos.GEOSGeom_createCollection(6, subs, L), N)
 
+
 def geos_multipolygon_from_polygons(ob):
-    """ob must be either a sequence or array of sequences or arrays."""
+    """
+    ob must be either a MultiPolygon, sequence or array of sequences 
+    or arrays.
+    
+    """
+    if isinstance(ob, MultiPolygon):
+        return geos_geom_from_py(ob)
+
     obs = getattr(ob, 'geoms', None) or ob
     L = len(obs)
     assert L >= 1
@@ -148,7 +180,7 @@ def geos_multipolygon_from_polygons(ob):
         holes = getattr(obs[l], 'interiors', None)
         if holes is None:
             holes =  obs[l][1]
-        geom, ndims = geos_polygon_from_py(shell, holes)
+        geom, ndims = polygon.geos_polygon_from_py(shell, holes)
         subs[l] = cast(geom, c_void_p)
             
     return (lgeos.GEOSGeom_createCollection(6, subs, L), N)
