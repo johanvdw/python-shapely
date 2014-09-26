@@ -3,25 +3,29 @@ Date: Mon, 20 Jan 2014 11:16:00 +0100
 Subject: Use "cythonize" for cythonization
 
 ---
- setup.py | 29 ++---------------------------
- 1 file changed, 2 insertions(+), 27 deletions(-)
+ setup.py | 31 ++-----------------------------
+ 1 file changed, 2 insertions(+), 29 deletions(-)
+ mode change 100755 => 100644 setup.py
 
 diff --git a/setup.py b/setup.py
-index 413a474..6aba026 100755
+old mode 100755
+new mode 100644
+index ea428c0..2d18d56
 --- a/setup.py
 +++ b/setup.py
-@@ -14,6 +14,7 @@ except ImportError:
- from distutils.cmd import Command
+@@ -15,6 +15,7 @@ from distutils.cmd import Command
  from distutils.errors import CCompilerError, DistutilsExecError, \
      DistutilsPlatformError
+ from distutils.sysconfig import get_config_var
 +from Cython.Build import cythonize
  import errno
  import glob
  import os
-@@ -177,33 +178,7 @@ elif sys.platform == 'win32':
+@@ -153,35 +154,7 @@ elif sys.platform == 'win32':
  else:
      libraries = ['geos_c']
  
+-
 -if os.path.exists("MANIFEST.in"):
 -    pyx_file = "shapely/speedups/_speedups.pyx"
 -    c_file = "shapely/speedups/_speedups.c"
@@ -47,9 +51,10 @@ index 413a474..6aba026 100755
 -    Extension(
 -        "shapely.speedups._speedups",
 -        ["shapely/speedups/_speedups.c"],
--        libraries=libraries)
+-        libraries=libraries,
+-        include_dirs=[get_config_var('INCLUDEDIR')],),
 -]
 +ext_modules = cythonize("shapely/speedups/_speedups.pyx")
  
  try:
-     # try building with speedups
+     import numpy as np
