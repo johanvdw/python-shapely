@@ -2,8 +2,9 @@
 """
 from . import unittest, numpy
 from shapely.wkb import loads as load_wkb
+from shapely.geos import lgeos
 from shapely.geometry import Point, Polygon, asPolygon
-from shapely.geometry.polygon import LinearRing, asLinearRing
+from shapely.geometry.polygon import LinearRing, LineString, asLinearRing
 from shapely.geometry.base import dump_coords
 
 
@@ -73,6 +74,13 @@ class PolygonTestCase(unittest.TestCase):
         with self.assertRaises(IndexError):  # index out of range
             polygon.interiors[1]
 
+        # Test from another Polygon
+        copy = Polygon(polygon)
+        self.assertEqual(len(polygon.exterior.coords), 5)
+        self.assertEqual(len(polygon.interiors[0].coords), 5)
+        with self.assertRaises(IndexError):  # index out of range
+            polygon.interiors[1]
+
         # Coordinate getters and setters raise exceptions
         self.assertRaises(NotImplementedError, polygon._get_coords)
         with self.assertRaises(NotImplementedError):
@@ -106,6 +114,27 @@ class PolygonTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             # A LinearRing must have at least 3 coordinate tuples
             Polygon([[1, 2], [2, 3]])
+
+
+    def test_linearring_from_closed_linestring(self):
+        coords = [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 0.0)]
+        line = LineString(coords)
+        ring = LinearRing(line)
+        self.assertEqual(len(ring.coords), 4)
+        self.assertEqual(ring.coords[:], coords)
+        self.assertEqual('LinearRing',
+                         lgeos.GEOSGeomType(ring._geom).decode('ascii'))
+
+
+    def test_linearring_from_unclosed_linestring(self):
+        coords = [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 0.0)]
+        line = LineString(coords[:-1])  # Pass in unclosed line
+        ring = LinearRing(line)
+        self.assertEqual(len(ring.coords), 4)
+        self.assertEqual(ring.coords[:], coords)
+        self.assertEqual('LinearRing',
+                         lgeos.GEOSGeomType(ring._geom).decode('ascii'))
+
 
     @unittest.skipIf(not numpy, 'Numpy required')
     def test_numpy(self):

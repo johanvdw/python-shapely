@@ -1,5 +1,6 @@
 from . import unittest, numpy
-from shapely.geometry import LineString, asLineString
+from shapely.geos import lgeos
+from shapely.geometry import LineString, asLineString, Point, LinearRing
 
 
 class LineStringTestCase(unittest.TestCase):
@@ -11,10 +12,15 @@ class LineStringTestCase(unittest.TestCase):
         self.assertEqual(len(line.coords), 2)
         self.assertEqual(line.coords[:], [(1.0, 2.0), (3.0, 4.0)])
 
-        # From lines
-        copy = LineString(line)
-        self.assertEqual(len(copy.coords), 2)
-        self.assertEqual(copy.coords[:], [(1.0, 2.0), (3.0, 4.0)])
+        # From Points
+        line2 = LineString((Point(1.0, 2.0), Point(3.0, 4.0)))
+        self.assertEqual(len(line2.coords), 2)
+        self.assertEqual(line2.coords[:], [(1.0, 2.0), (3.0, 4.0)])
+
+        # From mix of tuples and Points
+        line3 = LineString((Point(1.0, 2.0), (2.0, 3.0), Point(3.0, 4.0)))
+        self.assertEqual(len(line3.coords), 3)
+        self.assertEqual(line3.coords[:], [(1.0, 2.0), (2.0, 3.0), (3.0, 4.0)])
 
         # Bounds
         self.assertEqual(line.bounds, (1.0, 2.0, 3.0, 4.0))
@@ -50,6 +56,36 @@ class LineStringTestCase(unittest.TestCase):
         # Check that we can set coordinates of a null geometry
         l_null.coords = [(0, 0), (1, 1)]
         self.assertAlmostEqual(l_null.length, 1.4142135623730951)
+
+
+    def test_from_linestring(self):
+        line = LineString(((1.0, 2.0), (3.0, 4.0)))
+        copy = LineString(line)
+        self.assertEqual(len(copy.coords), 2)
+        self.assertEqual(copy.coords[:], [(1.0, 2.0), (3.0, 4.0)])
+        self.assertEqual('LineString',
+                         lgeos.GEOSGeomType(copy._geom).decode('ascii'))
+
+
+    def test_from_linestring_z(self):
+        coords = [(1.0, 2.0, 3.0), (4.0, 5.0, 6.0)]
+        line = LineString(coords)
+        copy = LineString(line)
+        self.assertEqual(len(copy.coords), 2)
+        self.assertEqual(copy.coords[:], coords)
+        self.assertEqual('LineString',
+                         lgeos.GEOSGeomType(copy._geom).decode('ascii'))
+
+
+    def test_from_linearring(self):
+        coords = [(0.0, 0.0), (1.0, 0.0), (1.0, 1.0), (0.0, 0.0)]
+        ring = LinearRing(coords)
+        copy = LineString(ring)
+        self.assertEqual(len(copy.coords), 4)
+        self.assertEqual(copy.coords[:], coords)
+        self.assertEqual('LineString',
+                         lgeos.GEOSGeomType(copy._geom).decode('ascii'))
+
 
     @unittest.skipIf(not numpy, 'Numpy required')
     def test_numpy(self):

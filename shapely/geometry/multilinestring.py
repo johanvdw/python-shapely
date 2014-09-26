@@ -9,8 +9,8 @@ if sys.version_info[0] < 3:
 from ctypes import c_double, c_void_p, cast, POINTER
 
 from shapely.geos import lgeos
-from shapely.geometry.base import BaseMultipartGeometry
-from shapely.geometry.linestring import LineString, geos_linestring_from_py
+from shapely.geometry.base import BaseMultipartGeometry, geos_geom_from_py
+from shapely.geometry import linestring
 from shapely.geometry.proxy import CachingGeometryProxy
 
 __all__ = ['MultiLineString', 'asMultiLineString']
@@ -52,7 +52,7 @@ class MultiLineString(BaseMultipartGeometry):
             self._geom, self._ndim = geos_multilinestring_from_py(lines)
 
     def shape_factory(self, *args):
-        return LineString(*args)
+        return linestring.LineString(*args)
 
     @property
     def __geo_interface__(self):
@@ -61,11 +61,32 @@ class MultiLineString(BaseMultipartGeometry):
             'coordinates': tuple(tuple(c for c in g.coords) for g in self.geoms)
             }
 
+    def svg(self, scale_factor=1.):
+        """
+        SVG representation of the geometry. Scale factor is multiplied by
+        the size of the SVG symbol so it can be scaled consistently for a
+        consistent appearance based on the canvas size.
+        """
+        parts = []
+        for part in self.geoms:
+            pnt_format = " ".join(["{0},{1}".format(*c) for c in part.coords])
+            parts.append("""<polyline
+                fill="none"
+                stroke="{2}"
+                stroke-width={1}
+                points="{0}"
+                opacity=".8"
+                />""".format(
+                    pnt_format,
+                    2.*scale_factor,
+                    "#66cc99" if self.is_valid else "#ff3333"))
+        return "\n".join(parts)
+
 
 class MultiLineStringAdapter(CachingGeometryProxy, MultiLineString):
     
     context = None
-    _owned = False
+    _other_owned = False
 
     def __init__(self, context):
         self.context = context
@@ -90,7 +111,12 @@ def asMultiLineString(context):
 
 
 def geos_multilinestring_from_py(ob):
-    # ob must be either a sequence or array of sequences or arrays
+    # ob must be either a MultiLineString, a sequence, or 
+    # array of sequences or arrays
+    
+    if isinstance(ob, MultiLineString):
+         return geos_geom_from_py(ob)
+
     try:
         # From array protocol
         array = ob.__array_interface__
@@ -102,9 +128,14 @@ def geos_multilinestring_from_py(ob):
         subs = (c_void_p * L)()
 
         for l in range(L):
-            geom, ndims = geos_linestring_from_py(array['data'][l])
+            geom, ndims = linestring.geos_linestring_from_py(array['data'][l])
             subs[i] = cast(geom, c_void_p)
-        N = lgeos.GEOSGeom_getDimensions(subs[0])
+
+        if lgeos.GEOSHasZ(subs[0]):
+            N = 3
+        else:
+            N = 2
+
     except (NotImplementedError, AttributeError):
         obs = getattr(ob, 'geoms', ob)
         L = len(obs)
@@ -121,7 +152,7 @@ def geos_multilinestring_from_py(ob):
         
         # add to coordinate sequence
         for l in range(L):
-            geom, ndims = geos_linestring_from_py(obs[l])
+            geom, ndims = linestring.geos_linestring_from_py(obs[l])
             subs[l] = cast(geom, c_void_p)
             
     return (lgeos.GEOSGeom_createCollection(5, subs, L), N)

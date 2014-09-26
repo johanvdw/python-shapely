@@ -115,6 +115,25 @@ def geom_to_wkb(ob):
     return lgeos.GEOSGeomToWKB_buf(c_void_p(ob._geom), pointer(size))
 
 
+def geos_geom_from_py(ob, create_func=None):
+    """Helper function for geos_*_from_py functions in each geom type.
+
+    If a create_func is specified the coodinate sequence is cloned and a new
+    geometry is created with it, otherwise the geometry is cloned directly.
+    This behaviour is useful for converting between LineString and LinearRing
+    objects.
+    """
+    if create_func is None:
+        geom = lgeos.GEOSGeom_clone(ob._geom)
+    else:
+        cs = lgeos.GEOSGeom_getCoordSeq(ob._geom)
+        cs = lgeos.GEOSCoordSeq_clone(cs)
+        geom = create_func(cs)
+
+    N = ob._ndim
+
+    return geom, N
+
 def exceptNull(func):
     """Decorator which helps avoid GEOS operations on null pointers."""
     @wraps(func)
@@ -160,7 +179,7 @@ class BaseGeometry(object):
     # _crs : object
     #     Coordinate reference system. Available for Shapely extensions, but
     #     not implemented here.
-    # _owned : bool
+    # _other_owned : bool
     #     True if this object's GEOS geometry is owned by another as in the
     #     case of a multipart geometry member.
     __geom__ = EMPTY
@@ -168,7 +187,7 @@ class BaseGeometry(object):
     _ctypes_data = None
     _ndim = None
     _crs = None
-    _owned = False
+    _other_owned = False
 
     # Backend config
     impl = DefaultImplementation
@@ -180,19 +199,18 @@ class BaseGeometry(object):
     # a reference to the so/dll proxy to preserve access during clean up
     _lgeos = lgeos
 
-    def empty(self):
+    def empty(self, val=EMPTY):
         # TODO: defer cleanup to the implementation. We shouldn't be
         # explicitly calling a lgeos method here.
-        if not (self._owned or self._is_empty):
+        if not self._is_empty and not self._other_owned and self.__geom__:
             try:
                 self._lgeos.GEOSGeom_destroy(self.__geom__)
             except AttributeError:
                 pass  # _lgeos might be empty on shutdown
-        self.__geom__ = EMPTY
+        self.__geom__ = val
 
     def __del__(self):
-        self.empty()
-        self.__geom__ = None
+        self.empty(val=None)
         self.__p__ = None
 
     def __str__(self):
@@ -324,6 +342,36 @@ class BaseGeometry(object):
         """WKB hex representation of the geometry"""
         return WKBWriter(lgeos).write_hex(self)
 
+    def svg(self, scale_factor=1.):
+        """
+        SVG representation of the geometry. Scale factor is multiplied by
+        the size of the SVG symbol so it can be scaled consistently for a
+        consistent appearance based on the canvas size.
+        """
+        raise NotImplementedError
+
+    def _repr_svg_(self):
+        """SVG representation for iPython notebook"""
+        #Pick an arbitrary size for the SVG canvas
+
+
+        xmin, ymin, xmax, ymax = self.buffer(1).bounds
+        x_size = min([max([100., xmax - xmin]), 300])
+        y_size = min([max([100., ymax - ymin]), 300])
+        try:
+            scale_factor = max([xmax - xmin, ymax - ymin]) / max([x_size, y_size])
+        except ZeroDivisionError:
+            scale_factor = 1
+        buffered_box = "{0} {1} {2} {3}".format(xmin, ymin, xmax - xmin, ymax - ymin)
+        return """<svg
+            preserveAspectRatio="xMinYMin meet"
+            viewBox="{0}"
+            width="{1}"
+            height="{2}"
+            transform="translate(0, {1}),scale(1, -1)">
+            {3}
+            </svg>""".format(buffered_box, x_size, y_size, self.svg(scale_factor))
+
     @property
     def geom_type(self):
         """Name of the geometry's type, such as 'Point'"""
@@ -394,7 +442,7 @@ class BaseGeometry(object):
 
     def buffer(self, distance, resolution=16, quadsegs=None,
                cap_style=CAP_STYLE.round, join_style=JOIN_STYLE.round,
-               mitre_limit=0):
+               mitre_limit=5.0):
         """Returns a geometry with an envelope at a distance from the object's
         envelope
 
@@ -433,7 +481,6 @@ class BaseGeometry(object):
           >>> g.buffer(1.0, cap_style='square').area
           4.0
         """
-
         if quadsegs is not None:
             warn(
                 "The `quadsegs` argument is deprecated. Use `resolution`.",
@@ -441,7 +488,9 @@ class BaseGeometry(object):
             res = quadsegs
         else:
             res = resolution
-
+        if mitre_limit == 0.0:
+            raise ValueError(
+                'Cannot compute offset from zero-length line segment')
         if cap_style == CAP_STYLE.round and join_style == JOIN_STYLE.round:
             return geom_factory(self.impl['buffer'](self, distance, res))
 
@@ -508,6 +557,11 @@ class BaseGeometry(object):
     def is_ring(self):
         """True if the geometry is a closed ring, else False"""
         return bool(self.impl['is_ring'](self))
+
+    @property
+    def is_closed(self):
+        """True if the geometry is closed, else False"""
+        return bool(self.impl['is_closed'](self))
 
     @property
     def is_simple(self):
@@ -657,6 +711,14 @@ class BaseMultipartGeometry(BaseGeometry):
         else:
             return ()[index]
 
+    def svg(self, scale_factor=1.):
+        """
+        SVG representation of the geometry. Scale factor is multiplied by
+        the size of the SVG symbol so it can be scaled consistently for a
+        consistent appearance based on the canvas size.
+        """
+        return "\n".join([g.svg(scale_factor) for g in self])
+
 
 class GeometrySequence(object):
     """
@@ -688,7 +750,7 @@ class GeometrySequence(object):
 
     def _get_geom_item(self, i):
         g = self.shape_factory()
-        g._owned = True
+        g._other_owned = True
         g._geom = lgeos.GEOSGetGeometryN(self._geom, i)
         g._ndim = self._ndim
         g.__p__ = self
@@ -746,7 +808,7 @@ class HeterogeneousGeometrySequence(GeometrySequence):
     def _get_geom_item(self, i):
         sub = lgeos.GEOSGetGeometryN(self._geom, i)
         g = geom_factory(sub, parent=self)
-        g._owned = True
+        g._other_owned = True
         return g
 
 

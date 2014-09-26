@@ -4,6 +4,9 @@ Shapely
 
 Manipulation and analysis of geometric objects in the Cartesian plane.
 
+.. image:: https://travis-ci.org/Toblerity/Shapely.png?branch=master
+   :target: https://travis-ci.org/Toblerity/Shapely
+
 .. image:: http://farm3.staticflickr.com/2738/4511827859_b5822043b7_o_d.png
    :width: 800
    :height: 400
@@ -20,7 +23,7 @@ integrated with packages that are. For more details, see:
 Requirements
 ============
 
-Shapely 1.3 requires
+Shapely 1.4 requires
 
 * Python >=2.6 (including Python 3.x)
 * libgeos_c >=3.1 (3.0 and below have not been tested, YMMV)
@@ -30,13 +33,14 @@ Installation
 
 Windows users should use the executable installer, which contains the required
 GEOS DLL. Other users should acquire libgeos_c by any means, make sure that it
-is on the system library path, and install from the Python package index::
+is on the system library path, and install from the Python package index.
 
-  $ pip install Shapely
+.. code-block:: console
 
-or from a source distribution with the setup script::
+  $ pip install shapely
 
-  $ python setup.py install
+Shapely is also provided by popular Python distributions like Enthought Canopy
+and Continuum Analytics Anaconda. 
 
 .. warning:: Windows users:
    do not under any circumstances use pip (or easy_install) to uninstall
@@ -48,7 +52,9 @@ Usage
 =====
 
 Here is the canonical example of building an approximately circular patch by
-buffering a point::
+buffering a point.
+
+.. code-block:: pycon
 
   >>> from shapely.geometry import Point
   >>> patch = Point(0.0, 0.0).buffer(10.0)
@@ -65,40 +71,51 @@ Integration
 
 Shapely does not read or write data files, but it can serialize and deserialize
 using several well known formats and protocols. The shapely.wkb and shapely.wkt
-modules provide dumpers and loaders inspired by Python's pickle module.::
+modules provide dumpers and loaders inspired by Python's pickle module.
+
+.. code-block:: pycon
 
   >>> from shapely.wkt import dumps, loads
   >>> dumps(loads('POINT (0 0)'))
   'POINT (0.0000000000000000 0.0000000000000000)'
 
 All linear objects, such as the rings of a polygon (like ``patch`` above),
-provide the Numpy array interface.::
+provide the Numpy array interface.
 
-  >>> from numpy import asarray
-  >>> ag = asarray(patch.exterior)
-  >>> ag
+.. code-block:: pycon
+
+  >>> import numpy as np
+  >>> np.array(patch.exterior)
   array([[  1.00000000e+01,   0.00000000e+00],
          [  9.95184727e+00,  -9.80171403e-01],
          [  9.80785280e+00,  -1.95090322e+00],
          ...
          [  1.00000000e+01,   0.00000000e+00]])
 
-That yields a Numpy array of [x, y] arrays. This is not always exactly what one
-wants for plotting shapes with Matplotlib (for example), so Shapely 1.2 adds
-a `xy` property for obtaining separate arrays of coordinate x and y values.::
+That yields a Numpy array of `[x, y]` arrays. This is not always exactly what one
+wants for plotting shapes with Matplotlib (for example), so Shapely adds
+a `xy` property for obtaining separate arrays of coordinate x and y values.
+
+.. code-block:: pycon
 
   >>> x, y = patch.exterior.xy
-  >>> ax = asarray(x)
-  >>> ax
+  >>> np.array(x)
   array([  1.00000000e+01,   9.95184727e+00,   9.80785280e+00,  ...])
 
-Numpy arrays can also be adapted to Shapely linestrings::
+Numpy arrays of `[x, y]` arrays can also be adapted to Shapely linestrings.
 
-  >>> from shapely.geometry import asLineString
-  >>> asLineString(ag).length
+.. code-block:: pycon
+
+  >>> from shapely.geometry import LineString
+  >>> LineString(np.array(patch.exterior)).length
   62.806623139095073
-  >>> asLineString(ag).wkt
-  'LINESTRING (10.0000000000000000 0.0000000000000000, ...)'
+
+Numpy arrays of x and y must be transposed.
+
+.. code-block::
+
+  >>> LineString(np.transpose(np.array(patch.exterior.xy))).length
+  62.80662313909507
 
 Shapely can also integrate with other Python GIS packages using data modeled
 after GeoJSON.
@@ -116,22 +133,36 @@ after GeoJSON.
 Development and Testing
 =======================
 
-Dependecies for developing Shapely are listed in requirements-dev.txt. Cython
+Dependencies for developing Shapely are listed in requirements-dev.txt. Cython
 and Numpy are not required for production installations, only for development.
-Use of a virtual environment is strongly recommended.::
+Use of a virtual environment is strongly recommended.
+
+.. code-block:: console
 
   $ virtualenv .
   $ source bin/activate
   (env)$ pip install -r requirements-dev.txt
-  (env)$ python setup.py develop
+  (env)$ pip install -e .
 
-Shapely uses a Zope-stye suite of unittests and doctests, exercised via
-setup.py.::
+We use py.test to run Shapely's suite of unittests and doctests.
 
-  (env)$ python setup.py test
+.. code-block:: console
 
-Nosetests won't run the tests properly; Zope doctest suites are not currently
-supported well by nose.
+  (env)$ py.test tests
+
+Roadmap and Maintenance
+=======================
+
+Shapely 1.2.x is a maintenance-only branch which supports Python 2.4-2.6, but
+not Python 3+. There will be no new features in Shapely 1.2.x and only fixes
+for major bugs.
+
+Shapely 1.3.x is a maintenance-only branch supporting Pythons 2.7 and 3+.
+
+"Shapely 3000" is the name of the next milestone. New features will include
+vectorized operations, better integration with IPython Notebook, support for
+fixed precision models, and more. Less ctypes and more Cython is another theme
+in this branch. A 1.4 release should come out of this by Summer, 2014.
 
 Support
 =======
@@ -141,12 +172,12 @@ http://lists.gispython.org/mailman/listinfo/community.
 
 Bugs may be reported at https://github.com/Toblerity/Shapely.
 
-.. include:: ../CREDITS.txt
+.. include:: CREDITS.txt
 
 .. _JTS: http://www.vividsolutions.com/jts/jtshome.htm
 .. _PostGIS: http://postgis.org
 .. _GEOS: http://trac.osgeo.org/geos/
-.. _example apps: https://github.com/sgillies/shapely/tree/master/shapely/examples
+.. _example apps: https://github.com/Toblerity/shapely/tree/master/shapely/examples
 .. _manual: http://toblerity.github.com/shapely/manual.html
 .. _Pleiades: http://pleiades.stoa.org
 

@@ -13,7 +13,7 @@ import weakref
 from shapely.algorithms.cga import signed_area
 from shapely.coords import required
 from shapely.geos import lgeos
-from shapely.geometry.base import BaseGeometry
+from shapely.geometry.base import BaseGeometry, geos_geom_from_py
 from shapely.geometry.linestring import LineString, LineStringAdapter
 from shapely.geometry.proxy import PolygonProxy
 
@@ -178,7 +178,7 @@ class InteriorRingSequence(object):
             ring = LinearRing()
             ring.__geom__ = g
             ring.__p__ = self
-            ring._owned = True
+            ring._other_owned = True
             ring._ndim = self._ndim
             self.__rings__[i] = weakref.ref(ring)
         return self.__rings__[i]()
@@ -237,7 +237,7 @@ class Polygon(BaseGeometry):
             ring = LinearRing()
             ring.__geom__ = g
             ring.__p__ = self
-            ring._owned = True
+            ring._other_owned = True
             ring._ndim = self._ndim
             self._exterior = weakref.ref(ring)
         return self._exterior()
@@ -282,6 +282,26 @@ class Polygon(BaseGeometry):
             'coordinates': tuple(coords)
             }
 
+    def svg(self, scale_factor=1.):
+        """
+        SVG representation of the geometry. Scale factor is multiplied by
+        the size of the SVG symbol so it can be scaled consistently for a
+        consistent appearance based on the canvas size.
+        """
+        exterior_coords = [["{0},{1}".format(*c) for c in self.exterior.coords]]
+        interior_coords = [
+            ["{0},{1}".format(*c) for c in interior.coords]
+            for interior in self.interiors ]
+        path = " ".join([
+            "M {0} L {1} z".format(coords[0], " L ".join(coords[1:]))
+            for coords in exterior_coords + interior_coords ])
+        return """
+            <g fill-rule="evenodd" fill="{2}" stroke="#555555" 
+            stroke-width="{0}" opacity="0.6">
+            <path d="{1}" />
+            </g>""".format(
+                2.*scale_factor, path, "#66cc99" if self.is_valid else "#ff3333")
+
 
 class PolygonAdapter(PolygonProxy, Polygon):
     
@@ -324,6 +344,15 @@ def orient(polygon, sign=1.0):
     return Polygon(rings[0], rings[1:])
 
 def geos_linearring_from_py(ob, update_geom=None, update_ndim=0):
+    # If a LinearRing is passed in, clone it and return
+    # If a LineString is passed in, clone the coord seq and return a LinearRing
+    if isinstance(ob, LineString):
+        if type(ob) == LinearRing:
+            return geos_geom_from_py(ob)
+        else:
+            if ob.is_closed and len(ob.coords) >= 4:
+                return geos_geom_from_py(ob, lgeos.GEOSGeom_createLinearRing)
+
     # If numpy is present, we use numpy.require to ensure that we have a
     # C-continguous array that owns its data. View data will be copied.
     ob = required(ob)
@@ -441,6 +470,9 @@ def update_linearring_from_py(geom, ob):
     geos_linearring_from_py(ob, geom._geom, geom._ndim)
 
 def geos_polygon_from_py(shell, holes=None):
+    if isinstance(shell, Polygon):
+        return geos_geom_from_py(shell)
+
     if shell is not None:
         geos_shell, ndim = geos_linearring_from_py(shell)
         if holes is not None and len(holes) > 0:

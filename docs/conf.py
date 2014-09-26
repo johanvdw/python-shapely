@@ -35,15 +35,15 @@ extensions = [
     'matplotlib.sphinxext.only_directives',
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
-    'sphinx.ext.pngmath', # <----- pick one, not both
-    #'sphinx.ext.mathjax', # <--/
+    #'sphinx.ext.pngmath', # <----- pick one, not both
+    'sphinx.ext.mathjax', # <--/
 ]
 
 # Add any paths that contain templates here, relative to this directory.
 #templates_path = ['_templates']
 
 # The suffix of source filenames.
-source_suffix = '.txt'
+source_suffix = '.rst'
 
 # The encoding of source files.
 #source_encoding = 'utf-8'

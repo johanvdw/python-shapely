@@ -6,7 +6,7 @@ from ctypes import cast, POINTER
 
 from shapely.coords import required
 from shapely.geos import lgeos, DimensionError
-from shapely.geometry.base import BaseGeometry
+from shapely.geometry.base import BaseGeometry, geos_geom_from_py
 from shapely.geometry.proxy import CachingGeometryProxy
 
 __all__ = ['Point', 'asPoint']
@@ -74,6 +74,26 @@ class Point(BaseGeometry):
             'coordinates': self.coords[0]
             }
 
+    def svg(self, scale_factor=1.):
+        """
+        SVG representation of the geometry. Scale factor is multiplied by
+        the size of the SVG symbol so it can be scaled consistently for a
+        consistent appearance based on the canvas size.
+        """
+        return """<circle
+            cx="{0.x}"
+            cy="{0.y}"
+            r="{1}"
+            stroke="#555555"
+            stroke-width="{2}"
+            fill="{3}"
+            opacity=".6"
+            />""".format(
+                self,
+                3 * scale_factor,
+                1 * scale_factor,
+                "#66cc99" if self.is_valid else "#ff3333")
+
     @property
     def ctypes(self):
         if not self._ctypes_data:
@@ -126,7 +146,7 @@ class Point(BaseGeometry):
 
 class PointAdapter(CachingGeometryProxy, Point):
 
-    _owned = False
+    _other_owned = False
 
     def __init__(self, context):
         self.context = context
@@ -166,11 +186,14 @@ def asPoint(context):
 
 
 def geos_point_from_py(ob, update_geom=None, update_ndim=0):
-    """Create a GEOS geom from an object that is a coordinate sequence
+    """Create a GEOS geom from an object that is a Point, a coordinate sequence
     or that provides the array interface.
 
     Returns the GEOS geometry and the number of its dimensions.
     """
+    if isinstance(ob, Point):
+        return geos_geom_from_py(ob)
+
     # If numpy is present, we use numpy.require to ensure that we have a
     # C-continguous array that owns its data. View data will be copied.
     ob = required(ob)
