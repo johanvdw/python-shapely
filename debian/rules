@@ -14,6 +14,7 @@ override_dh_auto_clean:
 	dh_auto_clean
 	rm -f VERSION.txt
 	rm -f shapely/speedups/_speedups.c
+	rm -f shapely/vectorized/_vectorized.c
 	rm -f shapely/speedups/_speedups.so
 	rm -f Shapely.egg-info/*
 
