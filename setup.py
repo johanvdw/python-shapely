@@ -85,8 +85,7 @@ setup_args = dict(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Topic :: Scientific/Engineering :: GIS',
-    ],
-    data_files         = [('shapely', ['shapely/_geos.pxi'])]
+    ]
 )
 
 # Add DLLs for Windows
