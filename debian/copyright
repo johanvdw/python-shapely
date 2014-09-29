@@ -6,7 +6,7 @@ Source: http://pypi.python.org/packages/source/S/Shapely/
 Files: *
 Copyright: © 2011 Sean Gillies <sgillies@frii.com>
            (see /usr/share/doc/python-shapely/CREDITS.txt for full list).
-License: BSD
+License: BSD-3-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
  .
