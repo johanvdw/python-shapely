@@ -1,0 +1,19 @@
+From: Pietro Battiston <me@pietrobattiston.it>
+Date: Fri, 26 Sep 2014 16:07:19 +0200
+Subject: setup.cfg to autobuild sphinx
+
+---
+ setup.cfg | 4 ++++
+ 1 file changed, 4 insertions(+)
+ create mode 100644 setup.cfg
+
+diff --git a/setup.cfg b/setup.cfg
+new file mode 100644
+index 0000000..693f88b
+--- /dev/null
++++ b/setup.cfg
+@@ -0,0 +1,4 @@
++[build_sphinx]
++source-dir = docs
++build-dir  = build/sphinx
++all_files  = 1
