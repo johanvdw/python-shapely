@@ -1,0 +1,24 @@
+From: Pietro Battiston <me@pietrobattiston.it>
+Date: Mon, 29 Sep 2014 08:48:38 +0200
+Subject: Do not install .pxi file
+
+This file is apparently not required for the (post-install) functioning of
+shapely, and it makes the Python 2 and 3 versions clash.
+---
+ setup.py | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index 2d18d56..fabe936 100644
+--- a/setup.py
++++ b/setup.py
+@@ -85,8 +85,7 @@ setup_args = dict(
+         'Programming Language :: Python :: 2.7',
+         'Programming Language :: Python :: 3',
+         'Topic :: Scientific/Engineering :: GIS',
+-    ],
+-    data_files         = [('shapely', ['shapely/_geos.pxi'])]
++    ]
+ )
+ 
+ # Add DLLs for Windows
