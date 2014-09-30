@@ -1,6 +1,12 @@
-python-shapely (1.4.1-1) unstable; urgency=medium
+python-shapely (1.4.1-1) unstable; urgency=low
 
   * Imported Upstream version 1.4.1
+    - Build documentation which now uses sphinx.
+    - Install documentation in new package python-shapely-doc.
+    - Strip non-needed file _geos.pxi.
+    - python{,3}-dev now needed as Build-Depends.
+  * Clarified BSD version in debian/copyright.
+  * Updated policy version.
 
  -- Pietro Battiston <me@pietrobattiston.it>  Fri, 26 Sep 2014 15:59:20 +0200
 
@@ -52,7 +58,7 @@ python-shapely (1.2.8-1) unstable; urgency=low
   * New upstream release.
   * Use dh_python2.
   * Remove obsolete patch "typo-in-dll-test".
-  * Added python-matplotlib (used by example scripts) in Suggests.
+  * Added python-matplotlib (used by eline.lengthxample scripts) in Suggests.
 
  -- Pietro Battiston <me@pietrobattiston.it>  Fri, 11 Feb 2011 12:03:40 +0200
 
