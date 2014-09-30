@@ -1,0 +1,21 @@
+From: Pietro Battiston <me@pietrobattiston.it>
+Date: Tue, 30 Sep 2014 11:56:55 +0200
+Subject: Retrieve MathJax.js locally
+
+---
+ docs/conf.py | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/docs/conf.py b/docs/conf.py
+index fe3b911..0fc0781 100644
+--- a/docs/conf.py
++++ b/docs/conf.py
+@@ -39,6 +39,8 @@ extensions = [
+     'sphinx.ext.mathjax', # <--/
+ ]
+ 
++mathjax_path = 'mathjax/MathJax.js?config=tex-ams-mml_htmlormml'
++
+ # Add any paths that contain templates here, relative to this directory.
+ #templates_path = ['_templates']
+ 

@@ -1,2 +1,3 @@
 0001-Use-cythonize-for-cythonization.patch
 0002-setup.cfg-to-autobuild-sphinx.patch
+0003-Retrieve-MathJax.js-locally.patch
