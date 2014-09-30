@@ -27,3 +27,5 @@ endif
 override_dh_auto_build:
 	rm -f shapely/speedups/_speedups.c
 	dh_auto_build
+	python setup.py build_sphinx
+	ln -s /usr/share/javascript/mathjax build/sphinx/html/_static/
