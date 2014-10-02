@@ -1,6 +1,6 @@
-python-shapely (1.4.1-1) unstable; urgency=low
+python-shapely (1.4.3-1) unstable; urgency=low
 
-  * Imported Upstream version 1.4.1
+  * Imported Upstream version 1.4.3
     - Build documentation which now uses sphinx.
     - Install documentation in new package python-shapely-doc.
     - Strip non-needed file _geos.pxi.
