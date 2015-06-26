@@ -4,8 +4,7 @@ Shapely
 
 Manipulation and analysis of geometric objects in the Cartesian plane.
 
-.. image:: https://travis-ci.org/Toblerity/Shapely.png?branch=master
-   :target: https://travis-ci.org/Toblerity/Shapely
+.. `TRAVIS CI https://travis-ci.org/Toblerity/Shapely`
 
 .. image:: http://farm3.staticflickr.com/2738/4511827859_b5822043b7_o_d.png
    :width: 800
