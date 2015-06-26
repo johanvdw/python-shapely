@@ -4,7 +4,7 @@ Upstream-Contact: Gis Python community list <community@lists.gispython.org>
 Source: http://pypi.python.org/packages/source/S/Shapely/
 
 Files: *
-Copyright: © 2011 Sean Gillies <sgillies@frii.com>
+Copyright: © 2011-2015 Sean Gillies <sgillies@frii.com>
            (see /usr/share/doc/python-shapely/CREDITS.txt for full list).
 License: BSD-3-clause
  Redistribution and use in source and binary forms, with or without
@@ -41,8 +41,8 @@ License: GPL-3
  On Debian systems, the complete text of the GNU General
  Public License can be found in `/usr/share/common-licenses/GPL-3'.
 
-Files: manual/manual.txt
-Copyright: © 2010 Sean C. Gillies <sgillies@frii.com>
+Files: docs/manual.rst
+Copyright: © 2010-2015 Sean C. Gillies <sgillies@frii.com>
 License: CC-BY
  THE WORK (AS DEFINED BELOW) IS PROVIDED UNDER THE TERMS OF THIS CREATIVE
  COMMONS PUBLIC LICENSE ("CCPL" OR "LICENSE"). THE WORK IS PROTECTED BY
