@@ -1,3 +1,17 @@
+python-shapely (1.5.9-1) UNRELEASED; urgency=medium
+
+  [ Pietro Battiston ]
+  * Suggests: python-shapely-doc (Closes: #765417, #765418)
+
+  [ Johan Van de Wauw ]
+  * Mangle version in watch file
+  * Add gbp.conf
+  * Imported Upstream version 1.5.9
+  * Imported Upstream version 1.5.9
+  * Remove cythonize patch
+
+ -- Pietro Battiston <me@pietrobattiston.it>  Fri, 26 Jun 2015 21:02:09 +0200
+
 python-shapely (1.4.3-1) unstable; urgency=low
 
   * Imported Upstream version 1.4.3
