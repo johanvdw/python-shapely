@@ -36,7 +36,7 @@ if version is None:
 
 # Handle UTF-8 encoding of certain text files.
 open_kwds = {}
-if sys.version_info > (3,):
+if sys.version_info >= (3,):
     open_kwds['encoding'] = 'utf-8'
 
 with open('VERSION.txt', 'w', **open_kwds) as fp:
@@ -184,12 +184,13 @@ ext_modules = [
         include_dirs=[get_config_var('INCLUDEDIR')],),
 ]
 
+cmd_classes = setup_args.setdefault('cmdclass', {})
+
 try:
     import numpy as np
     from Cython.Distutils import build_ext as cython_build_ext
     from distutils.extension import Extension as DistutilsExtension
 
-    cmd_classes = setup_args.setdefault('cmdclass', {})
     if 'build_ext' in cmd_classes:
         raise ValueError('We need to put the Cython build_ext in '
                          'cmd_classes, but it is already defined.')
@@ -221,6 +222,9 @@ except BuildFailed as ex:
     print(BUILD_EXT_WARNING)
     print("Failure information, if any, is above.")
     print("I'm retrying the build without the C extension now.")
+
+    if 'build_ext' in cmd_classes:
+        del cmd_classes['build_ext']
 
     setup(**setup_args)
 
