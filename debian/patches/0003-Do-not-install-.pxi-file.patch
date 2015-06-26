@@ -9,7 +9,7 @@ shapely, and it makes the Python 2 and 3 versions clash.
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/setup.py b/setup.py
-index 2d18d56..fabe936 100644
+index 9748470..7529165 100755
 --- a/setup.py
 +++ b/setup.py
 @@ -85,8 +85,7 @@ setup_args = dict(
