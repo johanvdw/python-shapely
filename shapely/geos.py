@@ -8,7 +8,8 @@ import sys
 import atexit
 import logging
 import threading
-from ctypes import CDLL, cdll, pointer, c_void_p, c_size_t, c_char_p, string_at
+from ctypes import CDLL, cdll, pointer, string_at, cast, POINTER
+from ctypes import c_void_p, c_size_t, c_char_p, c_int, c_float
 from ctypes.util import find_library
 
 from . import ftools
@@ -60,18 +61,29 @@ if sys.platform.startswith('linux'):
     free.restype = None
 
 elif sys.platform == 'darwin':
-    if hasattr(sys, 'frozen'):
-        # .app file from py2app
-        alt_paths = [os.path.join(os.environ['RESOURCEPATH'],
-                     '..', 'Frameworks', 'libgeos_c.dylib')]
+    # First test to see if this is a delocated wheel with a GEOS dylib.
+    geos_whl_dylib = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), '.dylibs/libgeos_c.1.dylib'))
+    if os.path.exists(geos_whl_dylib):
+        _lgeos = CDLL(geos_whl_dylib)
     else:
-        alt_paths = [
-            # The Framework build from Kyng Chaos:
-            "/Library/Frameworks/GEOS.framework/Versions/Current/GEOS",
-            # macports
-            '/opt/local/lib/libgeos_c.dylib',
-        ]
-    _lgeos = load_dll('geos_c', fallbacks=alt_paths)
+        if hasattr(sys, 'frozen'):
+            try:
+                # .app file from py2app
+                alt_paths = [os.path.join(os.environ['RESOURCEPATH'],
+                            '..', 'Frameworks', 'libgeos_c.dylib')]
+            except KeyError:
+                # binary from pyinstaller
+                alt_paths = [os.path.join(sys.executable, 'libgeos_c.dylib')]
+        else:
+            alt_paths = [
+                # The Framework build from Kyng Chaos
+                "/Library/Frameworks/GEOS.framework/Versions/Current/GEOS",
+                # macports
+                '/opt/local/lib/libgeos_c.dylib',
+            ]
+        _lgeos = load_dll('geos_c', fallbacks=alt_paths)
+
     free = load_dll('c').free
     free.argtypes = [c_void_p]
     free.restype = None
@@ -177,19 +189,33 @@ class TopologicalError(Exception):
 class PredicateError(Exception):
     pass
 
+# While this function can take any number of positional arguments when
+# called from Python and GEOS expects its error handler to accept any
+# number of arguments (like printf), I'm unable to get ctypes to make
+# a callback object from this function that will accept any number of
+# arguments.
+#
+# At the moment, functions in the GEOS C API only pass 0 or 1 arguments
+# to the error handler. We can deal with this, but when if that changes,
+# Shapely may break.
 
-def error_handler(fmt, *args):
-    if sys.version_info[0] >= 3:
+def handler(level):
+    def callback(fmt, *args):
         fmt = fmt.decode('ascii')
-        args = [arg.decode('ascii') for arg in args]
-    LOG.error(fmt, *args)
+        conversions = re.findall(r'%.', fmt)
+        log_vals = []
+        for spec, arg in zip(conversions, args):
+            if spec == '%s' and arg is not None:
+                log_vals.append(string_at(arg).decode('ascii'))
+            else:
+                LOG.error("An error occurred, but the format string "
+                          "'%s' could not be converted.", fmt)
+                return
+        getattr(LOG, level)(fmt, *log_vals)
+    return callback
 
-
-def notice_handler(fmt, args):
-    if sys.version_info[0] >= 3:
-        fmt = fmt.decode('ascii')
-        args = args.decode('ascii')
-    LOG.warning(fmt, args)
+error_handler = handler('error')
+notice_handler = handler('warning')
 
 error_h = EXCEPTION_HANDLER_FUNCTYPE(error_handler)
 notice_h = EXCEPTION_HANDLER_FUNCTYPE(notice_handler)
@@ -620,8 +646,18 @@ class LGEOS310(LGEOSBase):
                 self.GEOSWithin,
                 self.GEOSContains,
                 self.GEOSOverlaps,
+                self.GEOSCovers,
                 self.GEOSEquals,
                 self.GEOSEqualsExact,
+                self.GEOSPreparedDisjoint,
+                self.GEOSPreparedTouches,
+                self.GEOSPreparedCrosses,
+                self.GEOSPreparedWithin,
+                self.GEOSPreparedOverlaps,
+                self.GEOSPreparedContains,
+                self.GEOSPreparedContainsProperly,
+                self.GEOSPreparedCovers,
+                self.GEOSPreparedIntersects,
                 self.GEOSisEmpty,
                 self.GEOSisValid,
                 self.GEOSisSimple,
@@ -652,6 +688,7 @@ class LGEOS310(LGEOSBase):
         self.methods['within'] = self.GEOSWithin
         self.methods['contains'] = self.GEOSContains
         self.methods['overlaps'] = self.GEOSOverlaps
+        self.methods['covers'] = self.GEOSCovers
         self.methods['equals'] = self.GEOSEquals
         self.methods['equals_exact'] = self.GEOSEqualsExact
         self.methods['relate'] = self.GEOSRelate
@@ -659,10 +696,15 @@ class LGEOS310(LGEOSBase):
         self.methods['symmetric_difference'] = self.GEOSSymDifference
         self.methods['union'] = self.GEOSUnion
         self.methods['intersection'] = self.GEOSIntersection
+        self.methods['prepared_disjoint'] = self.GEOSPreparedDisjoint
+        self.methods['prepared_touches'] = self.GEOSPreparedTouches
         self.methods['prepared_intersects'] = self.GEOSPreparedIntersects
+        self.methods['prepared_crosses'] = self.GEOSPreparedCrosses
+        self.methods['prepared_within'] = self.GEOSPreparedWithin
         self.methods['prepared_contains'] = self.GEOSPreparedContains
         self.methods['prepared_contains_properly'] = \
             self.GEOSPreparedContainsProperly
+        self.methods['prepared_overlaps'] = self.GEOSPreparedOverlaps
         self.methods['prepared_covers'] = self.GEOSPreparedCovers
         self.methods['simplify'] = self.GEOSSimplify
         self.methods['topology_preserve_simplify'] = \
@@ -721,6 +763,7 @@ class LGEOS330(LGEOS320):
         self.methods['unary_union'] = self.GEOSUnaryUnion
         self.methods['is_closed'] = self.GEOSisClosed
         self.methods['cascaded_union'] = self.methods['unary_union']
+        self.methods['snap'] = self.GEOSSnap
 
 
 class LGEOS340(LGEOS330):

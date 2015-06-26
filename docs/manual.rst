@@ -1018,12 +1018,39 @@ evaluate topological, set-theoretic relationships. In a few cases the results
 may not be what one might expect starting from different assumptions. All take
 another geometric object as argument and return ``True`` or ``False``.
 
+.. method:: object.__eq__(other)
+
+  Returns ``True`` if the two objects are of the same geometric type, and
+  the coordinates of the two objects match precisely.
+
+.. method:: object.equals(other)
+
+  Returns ``True`` if the set-theoretic `boundary`, `interior`, and `exterior`
+  of the object coincide with those of the other.
+
+The coordinates passed to the object constructors are of these sets, and
+determine them, but are not the entirety of the sets. This is a potential
+"gotcha" for new users.  Equivalent lines, for example, can be constructed
+differently.
+
+.. code-block:: pycon
+
+  >>> a = LineString([(0, 0), (1, 1)])
+  >>> b = LineString([(0, 0), (0.5, 0.5), (1, 1)])
+  >>> c = LineString([(0, 0), (0, 0), (1, 1)])
+  >>> a.equals(b)
+  True
+  >>> a == b
+  False
+  >>> b.equals(c)
+  True
+  >>> b == c
+  False
+
 .. method:: object.almost_equals(other[, decimal=6])
 
   Returns ``True`` if the object is approximately equal to the `other` at all
   points to specified `decimal` place precision.
-
-See also :meth:`equals`.
 
 .. method:: object.contains(other)
 
@@ -1091,29 +1118,6 @@ A line does not cross a point that it contains.
   True
 
 This predicate applies to all types and is the inverse of :meth:`intersects`.
-
-.. method:: object.equals(other)
-
-  Returns ``True`` if the set-theoretic `boundary`, `interior`, and `exterior`
-  of the object coincide with those of the other.
-
-The coordinates passed to the object constructors are of these sets, and
-determine them, but are not the entirety of the sets. This is a potential
-"gotcha" for new users.  Equivalent lines, for example, can be constructed
-differently.
-
-.. code-block:: pycon
-
-  >>> a = LineString([(0, 0), (1, 1)])
-  >>> b = LineString([(0, 0), (0.5, 0.5), (1, 1)])
-  >>> c = LineString([(0, 0), (0, 0), (1, 1)])
-  >>> a.equals(b)
-  True
-  >>> b.equals(c)
-  True
-
-This predicate should not be mistaken for Python's ``==`` or ``is``
-constructions.
 
 .. method:: object.intersects(other)
 
@@ -2018,6 +2022,31 @@ the nearest points in a pair of geometries.
   ['POINT (0.5 1)', 'POINT (0.5 2)']
 
 Note that the nearest points may not be existing vertices in the geometries.
+
+Snapping
+--------
+
+The :func:`~shapely.ops.snap` function in `shapely.ops` snaps the vertices in
+one geometry to the vertices in a second geometry with a given tolerance.
+
+.. function:: shapely.ops.snap(geom1, geom2, tolerance)
+
+   Snaps vertices in `geom1` to vertices in the `geom2`. A copy of the snapped
+   geometry is returned. The input geometries are not modified.
+
+   The `tolerance` argument specifies the minimum distance between vertices for
+   them to be snapped.
+
+   `New in version 1.4.5`
+
+.. code-block:: pycon
+
+  >>> from shapely.ops import snap
+  >>> square = Polygon([(1,1), (2, 1), (2, 2), (1, 2), (1, 1)])
+  >>> line = LineString([(0,0), (0.8, 0.8), (1.8, 0.95), (2.6, 0.5)])
+  >>> result = snap(line, square, 0.5)
+  >>> result.wkt
+  'LINESTRING (0 0, 1 1, 2 1, 2.6 0.5)'
 
 Prepared Geometry Operations
 ----------------------------

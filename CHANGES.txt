@@ -1,6 +1,60 @@
 Changes
 =======
 
+1.5.9 (2015-05-27)
+------------------
+- Fix for 64 bit speedups compatibility (#274).
+
+1.5.8 (2015-04-29)
+------------------
+- Setup file encoding bug fix (#254).
+- Support for pyinstaller (#261).
+- Major prepared geometry operation fix for Windows (#268, #269).
+- Major fix for OS X binary wheel (#262).
+
+1.5.7 (2015-03-16)
+------------------
+- Test and fix buggy error and notice handlers (#249).
+
+1.5.6 (2015-02-02)
+------------------
+- Fix setup regression (#232, #234).
+- SVG representation improvements (#233, #237).
+
+1.5.5 (2015-01-20)
+------------------
+- MANIFEST changes to restore _geox.pxi (#231).
+
+1.5.4 (2015-01-19)
+------------------
+- Fixed OS X binary wheel library load path (#224).
+
+1.5.3 (2015-01-12)
+------------------
+- Fixed ownership and potential memory leak in polygonize (#223).
+- Wider release of binary wheels for OS X.
+
+1.5.2 (2015-01-04)
+------------------
+- Fail installation if GEOS dependency is not met, preventing update breakage
+  (#218, #219).
+
+1.5.1 (2014-12-04)
+------------------
+- Restore geometry hashing (#209).
+
+1.5.0 (2014-12-02)
+------------------
+- Affine transformation speedups (#197).
+- New `==` rich comparison (#195).
+- Geometry collection constructor (#200).
+- ops.snap() backed by GEOSSnap (#201).
+- Clearer exceptions in cases of topological invalidity (#203).
+
+1.4.4 (2014-11-02)
+------------------
+- Proper conversion of numpy float32 vals to coords (#186).
+
 1.4.3 (2014-10-01)
 ------------------
 - Fix for endianness bug in WKB writer (#174).
