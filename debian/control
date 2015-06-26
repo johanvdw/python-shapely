@@ -1,19 +1,42 @@
 Source: python-shapely
+Maintainer: Pietro Battiston <me@pietrobattiston.it>
 Section: python
 Priority: optional
-Maintainer: Pietro Battiston <me@pietrobattiston.it>
-Build-Depends: debhelper (>= 7.0.50), python-setuptools (>= 0.6), libgeos-c1 (>= 3.1.0), libgeos-dev, python-numpy, python-all (>= 2.6.6-3), python-all-dev, python3-all, python3-setuptools, cython, cython3, python-dev, python3-dev, dh-python, python-sphinx, python3-sphinx, python-matplotlib, libjs-mathjax
+Build-Depends: debhelper (>= 7.0.50),
+               python-setuptools (>= 0.6),
+               libgeos-c1 (>= 3.1.0),
+               libgeos-dev,
+               python-numpy,
+               python-all (>= 2.6.6-3),
+               python-all-dev,
+               python3-all,
+               python3-setuptools,
+               cython,
+               cython3,
+               python-dev,
+               python3-dev,
+               dh-python,
+               python-sphinx,
+               python3-sphinx,
+               python-matplotlib,
+               libjs-mathjax
 Standards-Version: 3.9.6
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/python-shapely.git
+Vcs-Git: git://anonscm.debian.org/collab-maint/python-shapely.git
+Homepage: http://toblerity.org/shapely
 X-Python-Version: >= 2.6
 X-Python3-Version: >= 3.2
-Homepage: http://toblerity.org/shapely
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/python-shapely.git
-Vcs-Git: git://anonscm.debian.org/collab-maint/python-shapely.git
 
 Package: python-shapely
 Architecture: any
-Depends: ${python:Depends}, ${misc:Depends}, ${shlibs:Depends}, python (>=2.6) | python-ctypes, libgeos-c1 (>= 3.1.0)
-Suggests: python-numpy, python-matplotlib, python-shapely-doc
+Depends: ${python:Depends},
+         ${misc:Depends},
+         ${shlibs:Depends},
+         python (>= 2.6) | python-ctypes,
+         libgeos-c1 (>= 3.1.0)
+Suggests: python-numpy,
+          python-matplotlib,
+          python-shapely-doc
 Enhances: python-numpy
 Description: geometric objects, predicates, and operations (Python 2)
  Shapely is a package for manipulation and analysis of 2D features.
@@ -28,8 +51,14 @@ Description: geometric objects, predicates, and operations (Python 2)
 
 Package: python3-shapely
 Architecture: any
-Depends: ${python3:Depends}, ${misc:Depends}, ${shlibs:Depends}, python3, libgeos-c1 (>= 3.1.0)
-Suggests: python3-numpy, python3-matplotlib, python-shapely-doc
+Depends: ${python3:Depends},
+         ${misc:Depends},
+         ${shlibs:Depends},
+         python3,
+         libgeos-c1 (>= 3.1.0)
+Suggests: python3-numpy,
+          python3-matplotlib,
+          python-shapely-doc
 Enhances: python3-numpy
 Description: geometric objects, predicates, and operations (Python 3)
  Shapely is a package for manipulation and analysis of 2D features.
@@ -43,10 +72,11 @@ Description: geometric objects, predicates, and operations (Python 3)
  This is the Python 3 version of the package.
 
 Package: python-shapely-doc
-Section: doc
 Architecture: all
+Section: doc
 Depends: ${misc:Depends}
-Recommends: python-shapely | python3-shapely, libjs-mathjax
+Recommends: python-shapely | python3-shapely,
+            libjs-mathjax
 Description: geometric objects, predicates, and operations (documentation)
  Shapely is a package for manipulation and analysis of 2D features.
  Its capabilities include:
