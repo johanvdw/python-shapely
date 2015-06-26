@@ -1,0 +1,23 @@
+From: Johan Van de Wauw <johan.vandewauw@gmail.com>
+Date: Fri, 26 Jun 2015 21:43:25 +0200
+Subject: Remove externally referenced image
+
+Fixes lintian privacy-breach-generic
+---
+ README.rst | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/README.rst b/README.rst
+index ea892c0..d557791 100644
+--- a/README.rst
++++ b/README.rst
+@@ -4,8 +4,7 @@ Shapely
+ 
+ Manipulation and analysis of geometric objects in the Cartesian plane.
+ 
+-.. image:: https://travis-ci.org/Toblerity/Shapely.png?branch=master
+-   :target: https://travis-ci.org/Toblerity/Shapely
++.. `TRAVIS CI https://travis-ci.org/Toblerity/Shapely`
+ 
+ .. image:: http://farm3.staticflickr.com/2738/4511827859_b5822043b7_o_d.png
+    :width: 800

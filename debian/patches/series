@@ -1,3 +1,4 @@
 0001-setup.cfg-to-autobuild-sphinx.patch
 0002-Retrieve-MathJax.js-locally.patch
 0003-Do-not-install-.pxi-file.patch
+0004-Remove-externally-referenced-image.patch
